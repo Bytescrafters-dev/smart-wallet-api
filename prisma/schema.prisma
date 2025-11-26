@@ -1,0 +1,373 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  phone        String?
+  avatar       String?
+  status       UserStatus @default(ACTIVE)
+  role         Role     @default(USER)
+  refreshTokens RefreshToken[]
+  orders       Order[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  Carts Cart[]
+
+  @@index([role])
+  @@index([status])
+  @@index([createdAt])
+  @@index([status, role, createdAt, id])
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum Role { 
+    USER 
+    ADMIN 
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  tokenId   String   @unique      // random id (jti)
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+}
+
+model Store {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  domain          String?
+  defaultCurrency String
+  timezone        String?
+  supportEmail    String?
+  logoUrl         String?
+  settings        StoreSetting[]
+  warehouses      Warehouse[]
+  regions         Region[]
+  shippingProfiles ShippingProfile[]
+  products        Product[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  Categories Category[]
+  Orders Order[]
+}
+
+model StoreSetting {
+  id      String  @id @default(cuid())
+  storeId String
+  store   Store   @relation(fields: [storeId], references: [id])
+  key     String
+  value   Json
+  updatedAt DateTime @updatedAt
+  @@unique([storeId, key])
+}
+
+model Warehouse {
+  id        String   @id @default(cuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id])
+  name      String
+  code      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Region {
+  id        String   @id @default(cuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id])
+  code      String
+  name      String
+  currencies String[]
+  countries  String[]
+
+  ShippingOptions ShippingOption[]
+}
+
+
+model Category {
+  id        String   @id @default(cuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id])
+  name      String
+  slug      String
+  parentId  String?
+  parent    Category? @relation("CategoryToParent", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryToParent")
+  products  Product[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([storeId, slug])
+  @@index([storeId])
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id])
+  title       String
+  slug        String
+  description String?
+  active      Boolean  @default(true)
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  profileId   String?
+  profile     ShippingProfile? @relation(fields: [profileId], references: [id])
+
+  images      ProductImage[]
+  options     ProductOption[]
+  variants    ProductVariant[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([storeId, slug])
+  @@index([storeId])
+  @@index([categoryId])
+}
+
+model ProductImage {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  storageKey  String
+  url         String
+  alt         String?
+  isPrimary   Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  width       Int?
+  height      Int?
+  mimeType    String?
+  bytes       Int?
+  checksum    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([productId, sortOrder])
+  @@index([productId, isPrimary])
+}
+
+model ProductOption {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  position  Int      @default(0)
+  values    ProductOptionValue[]
+  @@unique([productId, name])
+}
+
+model ProductOptionValue {
+  id         String         @id @default(cuid())
+  optionId   String
+  option     ProductOption  @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  value      String
+  position   Int            @default(0)
+  variantValues ProductVariantOptionValue[]
+  @@unique([optionId, value])
+}
+
+model ProductVariant {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku         String   @unique
+  barcode     String?  @unique
+  title       String?
+  weightGrams Int?
+  lengthCm    Int?
+  widthCm     Int?
+  heightCm    Int?
+  active      Boolean  @default(true)
+  prices      ProductVariantPrice[]
+  inventory   VariantInventory?
+  images      ProductVariantImage[]
+  optionValues ProductVariantOptionValue[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ProductVariantOptionValue {
+  id            String              @id @default(cuid())
+  variantId     String
+  variant       ProductVariant      @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  optionValueId String
+  optionValue   ProductOptionValue  @relation(fields: [optionValueId], references: [id], onDelete: Cascade)
+  @@unique([variantId, optionValueId])
+}
+
+model ProductVariantPrice {
+  id        String   @id @default(cuid())
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  currency  String
+  amount    Int
+  validFrom DateTime @default(now())
+  validTo   DateTime?
+  @@index([variantId, currency, validFrom])
+}
+
+model VariantInventory {
+  variantId String  @id
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  quantity  Int     @default(0)
+  reserved  Int     @default(0)
+  lowStockThreshold Int @default(5)
+}
+
+model ProductVariantImage {
+  id         String   @id @default(cuid())
+  variantId  String
+  variant    ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  storageKey String
+  url        String
+  alt        String?
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  @@index([variantId, sortOrder])
+}
+
+enum ShippingProfileType { 
+    DEFAULT 
+    CUSTOM 
+    GIFT_CARD 
+}
+
+model ShippingProfile {
+  id        String   @id @default(cuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id])
+  name      String
+  type      ShippingProfileType @default(DEFAULT)
+  products  Product[]
+  options   ShippingOption[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ShippingOptionType { 
+    STANDARD 
+    EXPRESS 
+}
+
+enum ShippingRateType { 
+    FLAT 
+    RATE_TABLE 
+}
+
+model ShippingOption {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   ShippingProfile @relation(fields: [profileId], references: [id])
+  name      String
+  type      ShippingOptionType
+  provider  String?
+  regionId  String?
+  region    Region?  @relation(fields: [regionId], references: [id])
+  rateType  ShippingRateType @default(FLAT)
+  amount    Int?
+  currency  String?
+  minSubtotal Int?
+  maxSubtotal Int?
+  data      Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Orders Order[]
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  currency  String
+  items     CartItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  productId String
+  variantId String
+  quantity  Int
+  unitPrice Int
+}
+
+enum OrderStatus { 
+    PENDING 
+    PAID 
+    CANCELED 
+    FULFILLED 
+}
+
+model Order {
+  id         String     @id @default(cuid())
+  storeId    String
+  store      Store      @relation(fields: [storeId], references: [id])
+  userId     String?
+  user       User?      @relation(fields: [userId], references: [id])
+  status     OrderStatus @default(PENDING)
+  currency   String
+  subtotal   Int
+  shipping   Int @default(0)
+  discount   Int @default(0)
+  tax        Int @default(0)
+  total      Int
+  shippingOptionId String?
+  shippingOption   ShippingOption? @relation(fields: [shippingOptionId], references: [id])
+  paymentId  String?
+  items      OrderItem[]
+  addressToId String?
+  addressTo  Address? @relation("OrderShipTo", fields: [addressToId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId String
+  variantId String
+  sku       String
+  title     String
+  unitPrice Int
+  quantity  Int
+  options   Json?
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  name       String?
+  phone      String?
+  email      String?
+  address1   String
+  address2   String?
+  city       String
+  state      String?
+  postalCode String
+  country    String
+
+  Order Order[] @relation("OrderShipTo")
+}
