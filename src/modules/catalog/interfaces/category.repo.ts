@@ -8,10 +8,17 @@ export type CategoryListParams = {
   take?: number;
 };
 
+export type CategoryListResponse = {
+  data: Category[];
+  total: number;
+  page: number;
+  limit: number;
+};
+
 export interface ICategoryRepo {
   findById(id: string): Promise<Category | null>;
   findBySlug(storeId: string, slug: string): Promise<Category | null>;
-  list(params: CategoryListParams): Promise<Category[]>;
+  list(params: CategoryListParams): Promise<CategoryListResponse>;
   create(
     data: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Category>;

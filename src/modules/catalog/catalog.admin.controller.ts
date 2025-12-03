@@ -1,18 +1,33 @@
-import { Body, Controller, Param, Post, Get, Put, Delete, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Post,
+  Get,
+  Put,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { CreateStoreDto } from './dtos/store.dto';
-import { CreateCategoryDto, UpdateCategoryDto, CategoryQueryDto } from './dtos/category.dto';
+import {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+  CategoryQueryDto,
+} from './dtos/category.dto';
 import { CreateProductDto } from './dtos/product.dto';
 
-@Controller('admin')
+@Controller('catalog')
 export class CatalogAdminController {
   constructor(private readonly catelogService: CatalogService) {}
 
+  //Stores
   @Post('stores')
   createStore(@Body() dto: CreateStoreDto) {
     return this.catelogService.createStore(dto);
   }
 
+  //Categories
   @Post('categories')
   createCategory(@Body() dto: CreateCategoryDto) {
     return this.catelogService.createCategory(dto);
@@ -32,10 +47,7 @@ export class CatalogAdminController {
   }
 
   @Put('categories/:id')
-  updateCategory(
-    @Param('id') id: string,
-    @Body() dto: UpdateCategoryDto,
-  ) {
+  updateCategory(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
     return this.catelogService.updateCategory(id, dto);
   }
 
@@ -44,6 +56,7 @@ export class CatalogAdminController {
     return this.catelogService.deleteCategory(id);
   }
 
+  //Products
   @Post('products')
   createProduct(@Body() dto: CreateProductDto) {
     return this.catelogService.createProduct(dto);

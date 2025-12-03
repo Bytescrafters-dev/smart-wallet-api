@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { ICategoryRepo, CategoryListParams } from '../interfaces/category.repo';
-import { Category } from '@prisma/client';
+import { Category, Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaCategoryRepo implements ICategoryRepo {
@@ -17,18 +17,30 @@ export class PrismaCategoryRepo implements ICategoryRepo {
     });
   }
 
-  list(params: CategoryListParams) {
+  async list(params: CategoryListParams) {
     const { storeId, q, parentId, skip = 0, take = 20 } = params;
-    return this.prisma.category.findMany({
-      where: {
-        storeId,
-        parentId: parentId === undefined ? undefined : parentId,
-        ...(q ? { name: { contains: q, mode: 'insensitive' } } : {}),
-      },
-      orderBy: { createdAt: 'desc' },
-      skip,
-      take,
-    });
+    const where: Prisma.CategoryWhereInput = {
+      storeId,
+      parentId: parentId === undefined ? undefined : parentId,
+      ...(q ? { name: { contains: q, mode: 'insensitive' as const } } : {}),
+    };
+
+    const [data, total] = await Promise.all([
+      this.prisma.category.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take,
+      }),
+      this.prisma.category.count({ where }),
+    ]);
+
+    return {
+      data,
+      total,
+      page: Math.floor(skip / take) + 1,
+      limit: take,
+    };
   }
 
   create(data: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) {

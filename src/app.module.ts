@@ -7,6 +7,7 @@ import { UploadsModule } from './modules/uploads/uploads.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { PlatformJwtModule } from './modules/auth/jwt.module';
 import { UsersModule } from './modules/users/user.module';
+import { StoresModule } from './modules/stores/stores.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UsersModule } from './modules/users/user.module';
     UploadsModule,
     OrdersModule,
     UsersModule,
+    StoresModule,
   ],
 })
 export class AppModule {}
