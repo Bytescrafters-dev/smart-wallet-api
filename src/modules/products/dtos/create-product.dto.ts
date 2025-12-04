@@ -1,11 +1,4 @@
-// src/products/dto/create-product.dto.ts
-import {
-  IsString,
-  IsOptional,
-  IsNotEmpty,
-  IsBoolean,
-  Matches,
-} from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsBoolean, Matches } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateProductDto {
@@ -17,7 +10,6 @@ export class CreateProductDto {
   @IsNotEmpty()
   title: string;
 
-  // Optional: auto-generate from title if omitted
   @IsOptional()
   @IsString()
   @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
@@ -33,7 +25,6 @@ export class CreateProductDto {
   @IsBoolean()
   active?: boolean;
 
-  // Optional relations; empty string -> undefined
   @IsOptional()
   @IsString()
   @Transform(({ value }) => (value === '' ? undefined : value))

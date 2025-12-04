@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../common/prisma/prisma.service';
-import { IProductRepo, ProductListParams } from '../interfaces/product.repo';
+import { PrismaService } from 'src/common/prisma/prisma.service';
+import { IProductRepository, ProductListParams } from '../interfaces/product.repository.interface';
 import { Product, ProductImage } from '@prisma/client';
 
 @Injectable()
-export class PrismaProductRepo implements IProductRepo {
+export class ProductRepository implements IProductRepository {
   constructor(private prisma: PrismaService) {}
 
   findById(id: string) {
@@ -18,15 +18,7 @@ export class PrismaProductRepo implements IProductRepo {
   }
 
   list(params: ProductListParams) {
-    const {
-      storeId,
-      q,
-      categoryId,
-      active,
-      skip = 0,
-      take = 20,
-      orderBy,
-    } = params;
+    const { storeId, q, categoryId, active, skip = 0, take = 20, orderBy } = params;
     return this.prisma.product.findMany({
       where: {
         storeId,
@@ -34,9 +26,7 @@ export class PrismaProductRepo implements IProductRepo {
         ...(categoryId ? { categoryId } : {}),
         ...(active === undefined ? {} : { active }),
       },
-      orderBy: orderBy
-        ? { [orderBy.field]: orderBy.dir }
-        : { createdAt: 'desc' },
+      orderBy: orderBy ? { [orderBy.field]: orderBy.dir } : { createdAt: 'desc' },
       skip,
       take,
     });

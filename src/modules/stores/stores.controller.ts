@@ -27,7 +27,6 @@ export class StoresController {
   @Get()
   @Roles('ADMIN')
   getAllStores() {
-    console.log('came here');
     return this.storesService.getAllStores();
   }
 

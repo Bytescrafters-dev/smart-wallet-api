@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Store } from '@prisma/client';
+import { Store, ShippingProfile } from '@prisma/client';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { IStoreRepository } from '../interfaces/store.repository.interface';
 
@@ -29,5 +29,12 @@ export class StoreRepository implements IStoreRepository {
 
   async deleteById(id: string): Promise<void> {
     await this.prisma.store.delete({ where: { id } });
+  }
+
+  async findShippingProfileById(profileId: string): Promise<Pick<ShippingProfile, 'id' | 'storeId'> | null> {
+    return this.prisma.shippingProfile.findUnique({
+      where: { id: profileId },
+      select: { id: true, storeId: true },
+    });
   }
 }
