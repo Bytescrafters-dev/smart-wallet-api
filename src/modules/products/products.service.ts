@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { TOKENS } from 'src/common/constants/tokens';
 import { IProductRepository } from './interfaces/product.repository.interface';
 import { IStoreRepository } from '../stores/interfaces/store.repository.interface';
@@ -30,7 +35,10 @@ export class ProductsService {
       .replace(/-+/g, '-');
   }
 
-  private async ensureUniqueSlug(storeId: string, baseSlug: string): Promise<string> {
+  private async ensureUniqueSlug(
+    storeId: string,
+    baseSlug: string,
+  ): Promise<string> {
     let candidate = baseSlug;
     let suffix = 2;
 
@@ -52,15 +60,21 @@ export class ProductsService {
       const category = await this.categoryRepo.findById(dto.categoryId);
       if (!category) throw new NotFoundException('Category not found.');
       if (category.storeId !== dto.storeId) {
-        throw new BadRequestException('Category must belong to the same store.');
+        throw new BadRequestException(
+          'Category must belong to the same store.',
+        );
       }
     }
 
     if (dto.profileId) {
-      const profile = await this.storeRepo.findShippingProfileById(dto.profileId);
+      const profile = await this.storeRepo.findShippingProfileById(
+        dto.profileId,
+      );
       if (!profile) throw new NotFoundException('Shipping profile not found.');
       if (profile.storeId !== dto.storeId) {
-        throw new BadRequestException('Shipping profile must belong to the same store.');
+        throw new BadRequestException(
+          'Shipping profile must belong to the same store.',
+        );
       }
     }
 
@@ -145,7 +159,14 @@ export class ProductsService {
       this.prisma.product.count({
         where: {
           storeId,
-          ...(filters.title || filters.slug ? { title: { contains: filters.title || filters.slug, mode: 'insensitive' } } : {}),
+          ...(filters.title || filters.slug
+            ? {
+                title: {
+                  contains: filters.title || filters.slug,
+                  mode: 'insensitive',
+                },
+              }
+            : {}),
           ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
           ...(filters.active !== undefined ? { active: filters.active } : {}),
         },
@@ -160,9 +181,120 @@ export class ProductsService {
     };
   }
 
+  async getAllProductOptionsByProductId(productId: string) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    const options = await this.productRepo.findOptionsByProductId(productId);
+
+    return options.map((option) => ({
+      id: option.id,
+      name: option.name,
+      position: option.position,
+      values: option.values.map((value) => ({
+        id: value.id,
+        value: value.value,
+        position: value.position,
+      })),
+    }));
+  }
+
+  async getProductOptionById(productId: string, optionId: string) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    const option = await this.productRepo.findOptionByProductAndId(
+      productId,
+      optionId,
+    );
+    if (!option) throw new NotFoundException('Option not found');
+
+    return {
+      id: option.id,
+      name: option.name,
+      position: option.position,
+      values: option.values.map((value) => ({
+        id: value.id,
+        value: value.value,
+        position: value.position,
+      })),
+    };
+  }
+
+  async deleteProductOptionById(productId: string, optionId: string) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    const option = await this.productRepo.findOptionByProductAndId(
+      productId,
+      optionId,
+    );
+    if (!option) throw new NotFoundException('Option not found');
+
+    // Check if option is used by existing variants
+    const variantCount = await this.prisma.productVariantOptionValue.count({
+      where: {
+        optionValue: {
+          optionId: optionId,
+        },
+      },
+    });
+
+    if (variantCount > 0) {
+      throw new BadRequestException(
+        'Cannot delete option that is used by existing variants',
+      );
+    }
+
+    await this.productRepo.deleteOptionById(optionId);
+  }
+
+  async getProductById(id: string) {
+    const product = await this.productRepo.findByIdWithRelations(id);
+    if (!product) throw new NotFoundException('Product not found');
+
+    return {
+      id: product.id,
+      title: product.title,
+      slug: product.slug,
+      description: product.description,
+      active: product.active,
+      storeId: product.storeId,
+      categoryId: product.categoryId,
+      profileId: product.profileId,
+      category: product.category,
+      profile: product.profile,
+      images: product.images,
+      options: product.options.map((option) => ({
+        id: option.id,
+        name: option.name,
+        position: option.position,
+        values: option.values.map((value) => ({
+          id: value.id,
+          value: value.value,
+          position: value.position,
+        })),
+      })),
+      variants: product.variants.map((variant) => ({
+        id: variant.id,
+        sku: variant.sku,
+        title: variant.title,
+        active: variant.active,
+        weightGrams: variant.weightGrams,
+        lengthCm: variant.lengthCm,
+        widthCm: variant.widthCm,
+        heightCm: variant.heightCm,
+        prices: variant.prices,
+        inventory: variant.inventory,
+      })),
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+    };
+  }
+
   async getBySlug(storeSlug: string, productSlug: string, currency?: string) {
     const store = await this.storeRepo.findBySlug(storeSlug);
-    if (!store) throw new NotFoundException('Store not found');
+    if (!store) throw new NotFoundException('Store not found slug');
 
     const p = await this.productRepo.findBySlug(store.id, productSlug);
     if (!p) throw new NotFoundException('Product not found');

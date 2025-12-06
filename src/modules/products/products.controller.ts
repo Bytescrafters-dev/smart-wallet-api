@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard, Roles, RolesGuard } from 'src/common/auth';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dtos/create-product.dto';
@@ -16,16 +25,10 @@ export class ProductsController {
     return this.productsService.createProduct(dto);
   }
 
-  @Post(':id/options')
+  @Get(':id')
   @Roles('ADMIN')
-  addOption(@Param('id') productId: string, @Body() dto: AddOptionDto) {
-    return this.productsService.addOption(productId, dto);
-  }
-
-  @Post(':id/variants')
-  @Roles('ADMIN')
-  addVariant(@Param('id') productId: string, @Body() dto: AddVariantDto) {
-    return this.productsService.addVariant(productId, dto);
+  getProductById(@Param('id') id: string) {
+    return this.productsService.getProductById(id);
   }
 
   @Get('store/:storeId')
@@ -58,5 +61,41 @@ export class ProductsController {
     @Query('currency') currency?: string,
   ) {
     return this.productsService.getBySlug(storeSlug, productSlug, currency);
+  }
+
+  @Post('product-options/:id/options')
+  @Roles('ADMIN')
+  addOption(@Param('id') productId: string, @Body() dto: AddOptionDto) {
+    return this.productsService.addOption(productId, dto);
+  }
+
+  @Get('product-options/:productId/options')
+  @Roles('ADMIN')
+  getAllProductOptionsByProductId(@Param('productId') productId: string) {
+    return this.productsService.getAllProductOptionsByProductId(productId);
+  }
+
+  @Get('product-options/:productId/options/:optionId')
+  @Roles('ADMIN')
+  getProductOptionById(
+    @Param('productId') productId: string,
+    @Param('optionId') optionId: string,
+  ) {
+    return this.productsService.getProductOptionById(productId, optionId);
+  }
+
+  @Delete('product-options/:productId/options/:optionId')
+  @Roles('ADMIN')
+  deleteProductOptionById(
+    @Param('productId') productId: string,
+    @Param('optionId') optionId: string,
+  ) {
+    return this.productsService.deleteProductOptionById(productId, optionId);
+  }
+
+  @Post(':id/variants')
+  @Roles('ADMIN')
+  addVariant(@Param('id') productId: string, @Body() dto: AddVariantDto) {
+    return this.productsService.addVariant(productId, dto);
   }
 }

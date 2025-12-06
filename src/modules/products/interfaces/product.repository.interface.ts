@@ -20,4 +20,8 @@ export interface IProductRepository {
   addImage(img: Omit<ProductImage, 'id' | 'createdAt' | 'updatedAt'>): Promise<ProductImage>;
   setPrimaryImage(productId: string, imageId: string): Promise<void>;
   deleteImage(imageId: string): Promise<void>;
+  findOptionsByProductId(productId: string): Promise<any[]>;
+  findOptionByProductAndId(productId: string, optionId: string): Promise<any | null>;
+  deleteOptionById(optionId: string): Promise<void>;
+  findByIdWithRelations(id: string): Promise<any | null>;
 }

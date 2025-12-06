@@ -64,4 +64,54 @@ export class ProductRepository implements IProductRepository {
   async deleteImage(imageId: string) {
     await this.prisma.productImage.delete({ where: { id: imageId } });
   }
+
+  findOptionsByProductId(productId: string) {
+    return this.prisma.productOption.findMany({
+      where: { productId },
+      include: {
+        values: {
+          orderBy: { position: 'asc' },
+        },
+      },
+      orderBy: { position: 'asc' },
+    });
+  }
+
+  findOptionByProductAndId(productId: string, optionId: string) {
+    return this.prisma.productOption.findFirst({
+      where: { id: optionId, productId },
+      include: {
+        values: {
+          orderBy: { position: 'asc' },
+        },
+      },
+    });
+  }
+
+  async deleteOptionById(optionId: string) {
+    await this.prisma.productOption.delete({
+      where: { id: optionId },
+    });
+  }
+
+  findByIdWithRelations(id: string) {
+    return this.prisma.product.findUnique({
+      where: { id },
+      include: {
+        images: { orderBy: { sortOrder: 'asc' } },
+        options: {
+          include: { values: { orderBy: { position: 'asc' } } },
+          orderBy: { position: 'asc' },
+        },
+        variants: {
+          include: {
+            prices: true,
+            inventory: true,
+          },
+        },
+        category: { select: { id: true, name: true } },
+        profile: { select: { id: true, name: true } },
+      },
+    });
+  }
 }
