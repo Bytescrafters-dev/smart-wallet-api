@@ -4,7 +4,9 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -13,6 +15,10 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { AddOptionDto } from './dtos/add-option.dto';
 import { AddVariantDto } from './dtos/add-variant.dto';
+import { CreateVariantsDto } from './dtos/create-variants.dto';
+import { UpdateVariantDto } from './dtos/update-variant.dto';
+import { UpdateProductVariantDto } from './dtos/update-product-variant.dto';
+import { ProductVariantDto } from './dtos/product-variant.dto';
 
 @Controller('products')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -97,5 +103,48 @@ export class ProductsController {
   @Roles('ADMIN')
   addVariant(@Param('id') productId: string, @Body() dto: AddVariantDto) {
     return this.productsService.addVariant(productId, dto);
+  }
+
+  @Get('product-variants/:productId/variants')
+  @Roles('ADMIN')
+  getProductVariants(@Param('productId') productId: string) {
+    return this.productsService.getProductVariants(productId);
+  }
+
+  @Post('product-variants/:productId/variants/bulk')
+  @Roles('ADMIN')
+  createVariantsBulk(
+    @Param('productId') productId: string,
+    @Body() dto: CreateVariantsDto,
+  ) {
+    return this.productsService.createVariantsBulk(productId, dto);
+  }
+
+  @Put('product-variants/:productId/variants/:variantId')
+  @Roles('ADMIN')
+  updateVariant(
+    @Param('productId') productId: string,
+    @Param('variantId') variantId: string,
+    @Body() dto: UpdateProductVariantDto,
+  ) {
+    return this.productsService.updateVariant(productId, variantId, dto);
+  }
+
+  @Delete('product-variants/:productId/variants/:variantId')
+  @Roles('ADMIN')
+  deleteVariant(
+    @Param('productId') productId: string,
+    @Param('variantId') variantId: string,
+  ) {
+    return this.productsService.deleteVariant(productId, variantId);
+  }
+
+  @Patch('product-variants/:productId/variants/bulk-update')
+  @Roles('ADMIN')
+  bulkUpdateVariants(
+    @Param('productId') productId: string,
+    @Body() variants: ProductVariantDto[],
+  ) {
+    return this.productsService.bulkUpdateVariants(productId, variants);
   }
 }

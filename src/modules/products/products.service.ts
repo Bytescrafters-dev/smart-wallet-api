@@ -11,6 +11,10 @@ import { ICategoryRepository } from '../categories/interfaces/category.repositor
 import { CreateProductDto } from './dtos/create-product.dto';
 import { AddOptionDto } from './dtos/add-option.dto';
 import { AddVariantDto } from './dtos/add-variant.dto';
+import { CreateVariantsDto } from './dtos/create-variants.dto';
+import { UpdateVariantDto } from './dtos/update-variant.dto';
+import { UpdateProductVariantDto } from './dtos/update-product-variant.dto';
+import { ProductVariantDto } from './dtos/product-variant.dto';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 
 @Injectable()
@@ -358,5 +362,242 @@ export class ProductsService {
       options: mappedOptions,
       variants: mappedVariants,
     };
+  }
+
+  async getProductVariants(productId: string) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    const variants = await this.productRepo.findVariantsByProductId(productId);
+    
+    return variants.map(variant => ({
+      id: variant.id,
+      sku: variant.sku,
+      barcode: variant.barcode,
+      title: variant.title,
+      weightGrams: variant.weightGrams,
+      lengthCm: variant.lengthCm,
+      widthCm: variant.widthCm,
+      heightCm: variant.heightCm,
+      active: variant.active,
+      optionValueIds: variant.optionValues.map(ov => ov.optionValueId),
+      prices: variant.prices,
+      inventory: variant.inventory,
+      createdAt: variant.createdAt,
+      updatedAt: variant.updatedAt,
+    }));
+  }
+
+  async createVariantsBulk(productId: string, dto: CreateVariantsDto) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    // Check for duplicate SKUs within the batch
+    const skus = dto.variants.map(v => v.sku);
+    const duplicateSkus = skus.filter((sku, index) => skus.indexOf(sku) !== index);
+    if (duplicateSkus.length > 0) {
+      throw new BadRequestException(`Duplicate SKUs in batch: ${duplicateSkus.join(', ')}`);
+    }
+
+    // Check if SKUs already exist in database
+    const existingVariants = await this.productRepo.findVariantsBySkus(skus);
+    if (existingVariants.length > 0) {
+      const existingSkus = existingVariants.map(v => v.sku);
+      throw new BadRequestException(`SKUs already exist: ${existingSkus.join(', ')}`);
+    }
+
+    // Validate all option value IDs exist and belong to the product
+    const allOptionValueIds = [...new Set(dto.variants.flatMap(v => v.optionValueIds))];
+    const optionValues = await this.productRepo.findOptionValuesByIds(allOptionValueIds);
+    
+    const validOptionValueIds = optionValues
+      .filter(ov => ov.option.productId === productId)
+      .map(ov => ov.id);
+    
+    const invalidIds = allOptionValueIds.filter(id => !validOptionValueIds.includes(id));
+    if (invalidIds.length > 0) {
+      throw new BadRequestException(`Invalid option value IDs: ${invalidIds.join(', ')}`);
+    }
+
+    // Create variants in transaction
+    return this.prisma.$transaction(async (tx) => {
+      const createdVariants: any[] = [];
+      
+      for (const variantData of dto.variants) {
+        // Create variant
+        const variant = await tx.productVariant.create({
+          data: {
+            productId,
+            sku: variantData.sku,
+            barcode: variantData.barcode,
+            title: variantData.title,
+            weightGrams: variantData.weightGrams,
+            lengthCm: variantData.lengthCm,
+            widthCm: variantData.widthCm,
+            heightCm: variantData.heightCm,
+            active: variantData.active,
+          },
+        });
+
+        // Create prices
+        for (const price of variantData.prices) {
+          await tx.productVariantPrice.create({
+            data: {
+              variantId: variant.id,
+              currency: price.currency,
+              amount: price.amount,
+              validFrom: price.validFrom || new Date(),
+              validTo: price.validTo,
+            },
+          });
+        }
+
+        // Create inventory
+        await tx.variantInventory.create({
+          data: {
+            variantId: variant.id,
+            quantity: variantData.inventory.quantity,
+            reserved: variantData.inventory.reserved,
+            lowStockThreshold: variantData.inventory.lowStockThreshold,
+          },
+        });
+
+        // Create option value mappings
+        for (const optionValueId of variantData.optionValueIds) {
+          await tx.productVariantOptionValue.create({
+            data: {
+              variantId: variant.id,
+              optionValueId,
+            },
+          });
+        }
+
+        createdVariants.push(variant);
+      }
+      
+      return createdVariants;
+    });
+  }
+
+  async updateVariant(productId: string, variantId: string, dto: UpdateProductVariantDto) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    const variant = await this.productRepo.findVariantById(variantId);
+    if (!variant || variant.productId !== productId) {
+      throw new NotFoundException('Variant not found');
+    }
+
+    const updateData: any = {};
+    if (dto.sku !== undefined) updateData.sku = dto.sku;
+    if (dto.barcode !== undefined) updateData.barcode = dto.barcode;
+    if (dto.title !== undefined) updateData.title = dto.title;
+    if (dto.weightGrams !== undefined) updateData.weightGrams = dto.weightGrams;
+    if (dto.lengthCm !== undefined) updateData.lengthCm = dto.lengthCm;
+    if (dto.widthCm !== undefined) updateData.widthCm = dto.widthCm;
+    if (dto.heightCm !== undefined) updateData.heightCm = dto.heightCm;
+    if (dto.active !== undefined) updateData.active = dto.active;
+
+    return this.prisma.$transaction(async (tx) => {
+      // Update variant basic data
+      const updatedVariant = await tx.productVariant.update({
+        where: { id: variantId },
+        data: updateData,
+      });
+
+      // Update option values if provided
+      if (dto.optionValueIds) {
+        await tx.productVariantOptionValue.deleteMany({
+          where: { variantId },
+        });
+        
+        for (const optionValueId of dto.optionValueIds) {
+          await tx.productVariantOptionValue.create({
+            data: { variantId, optionValueId },
+          });
+        }
+      }
+
+      // Update inventory if provided
+      if (dto.inventory) {
+        await tx.variantInventory.upsert({
+          where: { variantId },
+          update: dto.inventory,
+          create: {
+            variantId,
+            ...dto.inventory,
+          },
+        });
+      }
+
+      // Update prices if provided
+      if (dto.prices) {
+        await tx.productVariantPrice.deleteMany({
+          where: { variantId },
+        });
+        
+        for (const price of dto.prices) {
+          await tx.productVariantPrice.create({
+            data: {
+              variantId,
+              currency: price.currency!,
+              amount: price.amount!,
+              validFrom: price.validFrom || new Date(),
+              validTo: price.validTo,
+            },
+          });
+        }
+      }
+
+      return updatedVariant;
+    });
+  }
+
+  async deleteVariant(productId: string, variantId: string) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    const variant = await this.productRepo.findVariantById(variantId);
+    if (!variant || variant.productId !== productId) {
+      throw new NotFoundException('Variant not found');
+    }
+
+    await this.productRepo.deleteVariant(variantId);
+  }
+
+  async bulkUpdateVariants(productId: string, variants: ProductVariantDto[]) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    return this.prisma.$transaction(async (tx) => {
+      const updatedVariants: any[] = [];
+      
+      for (const variantData of variants) {
+        if (!variantData.sku) continue;
+        
+        const existingVariant = await tx.productVariant.findFirst({
+          where: { sku: variantData.sku, productId },
+        });
+        
+        if (!existingVariant) continue;
+        
+        const updatedVariant = await tx.productVariant.update({
+          where: { id: existingVariant.id },
+          data: {
+            barcode: variantData.barcode,
+            title: variantData.title,
+            weightGrams: variantData.weightGrams,
+            lengthCm: variantData.lengthCm,
+            widthCm: variantData.widthCm,
+            heightCm: variantData.heightCm,
+            active: variantData.active,
+          },
+        });
+        
+        updatedVariants.push(updatedVariant);
+      }
+      
+      return updatedVariants;
+    });
   }
 }

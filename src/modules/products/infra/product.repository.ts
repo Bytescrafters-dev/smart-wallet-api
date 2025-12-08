@@ -114,4 +114,100 @@ export class ProductRepository implements IProductRepository {
       },
     });
   }
+
+  findVariantsByProductId(productId: string) {
+    return this.prisma.productVariant.findMany({
+      where: { productId },
+      include: {
+        prices: true,
+        inventory: true,
+        optionValues: {
+          include: {
+            optionValue: {
+              include: { option: true },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  createVariant(data: any) {
+    return this.prisma.productVariant.create({ data });
+  }
+
+  updateVariant(variantId: string, data: any) {
+    return this.prisma.productVariant.update({
+      where: { id: variantId },
+      data,
+    });
+  }
+
+  async deleteVariant(variantId: string) {
+    await this.prisma.productVariant.delete({
+      where: { id: variantId },
+    });
+  }
+
+  findVariantById(variantId: string) {
+    return this.prisma.productVariant.findUnique({
+      where: { id: variantId },
+      include: {
+        prices: true,
+        inventory: true,
+        optionValues: {
+          include: {
+            optionValue: {
+              include: { option: true },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  createVariantPrice(data: any) {
+    return this.prisma.productVariantPrice.create({ data });
+  }
+
+  createVariantInventory(data: any) {
+    return this.prisma.variantInventory.create({ data });
+  }
+
+  async createVariantOptionValues(variantId: string, optionValueIds: string[]) {
+    await this.prisma.productVariantOptionValue.createMany({
+      data: optionValueIds.map(optionValueId => ({
+        variantId,
+        optionValueId,
+      })),
+    });
+  }
+
+  async updateVariantOptionValues(variantId: string, optionValueIds: string[]) {
+    await this.prisma.$transaction([
+      this.prisma.productVariantOptionValue.deleteMany({
+        where: { variantId },
+      }),
+      this.prisma.productVariantOptionValue.createMany({
+        data: optionValueIds.map(optionValueId => ({
+          variantId,
+          optionValueId,
+        })),
+      }),
+    ]);
+  }
+
+  findOptionValuesByIds(optionValueIds: string[]) {
+    return this.prisma.productOptionValue.findMany({
+      where: { id: { in: optionValueIds } },
+      include: { option: true },
+    });
+  }
+
+  findVariantsBySkus(skus: string[]) {
+    return this.prisma.productVariant.findMany({
+      where: { sku: { in: skus } },
+      select: { sku: true },
+    });
+  }
 }

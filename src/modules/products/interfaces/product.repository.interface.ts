@@ -24,4 +24,15 @@ export interface IProductRepository {
   findOptionByProductAndId(productId: string, optionId: string): Promise<any | null>;
   deleteOptionById(optionId: string): Promise<void>;
   findByIdWithRelations(id: string): Promise<any | null>;
+  findVariantsByProductId(productId: string): Promise<any[]>;
+  createVariant(data: any): Promise<any>;
+  updateVariant(variantId: string, data: any): Promise<any>;
+  deleteVariant(variantId: string): Promise<void>;
+  findVariantById(variantId: string): Promise<any | null>;
+  createVariantPrice(data: any): Promise<any>;
+  createVariantInventory(data: any): Promise<any>;
+  createVariantOptionValues(variantId: string, optionValueIds: string[]): Promise<void>;
+  updateVariantOptionValues(variantId: string, optionValueIds: string[]): Promise<void>;
+  findOptionValuesByIds(optionValueIds: string[]): Promise<any[]>;
+  findVariantsBySkus(skus: string[]): Promise<any[]>;
 }
