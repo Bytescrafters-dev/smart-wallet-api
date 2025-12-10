@@ -49,20 +49,66 @@ export class ProductRepository implements IProductRepository {
   }
 
   async setPrimaryImage(productId: string, imageId: string) {
-    await this.prisma.$transaction([
-      this.prisma.productImage.updateMany({
+    if (imageId) {
+      await this.prisma.$transaction([
+        this.prisma.productImage.updateMany({
+          where: { productId, isPrimary: true },
+          data: { isPrimary: false },
+        }),
+        this.prisma.productImage.update({
+          where: { id: imageId },
+          data: { isPrimary: true },
+        }),
+      ]);
+    } else {
+      await this.prisma.productImage.updateMany({
         where: { productId, isPrimary: true },
         data: { isPrimary: false },
-      }),
-      this.prisma.productImage.update({
-        where: { id: imageId },
-        data: { isPrimary: true },
-      }),
-    ]);
+      });
+    }
   }
 
   async deleteImage(imageId: string) {
     await this.prisma.productImage.delete({ where: { id: imageId } });
+  }
+
+  findImageById(imageId: string) {
+    return this.prisma.productImage.findUnique({ where: { id: imageId } });
+  }
+
+  findImagesByProductId(productId: string) {
+    return this.prisma.productImage.findMany({
+      where: { productId },
+      orderBy: [
+        { isPrimary: 'desc' },
+        { sortOrder: 'asc' },
+      ],
+    });
+  }
+
+  updateImage(imageId: string, data: Partial<Omit<ProductImage, 'id' | 'productId' | 'storageKey' | 'url' | 'createdAt' | 'updatedAt'>>) {
+    return this.prisma.productImage.update({
+      where: { id: imageId },
+      data,
+    });
+  }
+
+  async updateImageSortOrders(imageOrders: { id: string; sortOrder: number }[]) {
+    await this.prisma.$transaction(
+      imageOrders.map(({ id, sortOrder }) =>
+        this.prisma.productImage.update({
+          where: { id },
+          data: { sortOrder },
+        }),
+      ),
+    );
+  }
+
+  findNextPrimaryImage(productId: string) {
+    return this.prisma.productImage.findFirst({
+      where: { productId },
+      orderBy: { sortOrder: 'asc' },
+    });
   }
 
   findOptionsByProductId(productId: string) {

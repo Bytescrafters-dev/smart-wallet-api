@@ -20,6 +20,11 @@ export interface IProductRepository {
   addImage(img: Omit<ProductImage, 'id' | 'createdAt' | 'updatedAt'>): Promise<ProductImage>;
   setPrimaryImage(productId: string, imageId: string): Promise<void>;
   deleteImage(imageId: string): Promise<void>;
+  findImageById(imageId: string): Promise<ProductImage | null>;
+  findImagesByProductId(productId: string): Promise<ProductImage[]>;
+  updateImage(imageId: string, data: Partial<Omit<ProductImage, 'id' | 'productId' | 'storageKey' | 'url' | 'createdAt' | 'updatedAt'>>): Promise<ProductImage>;
+  updateImageSortOrders(imageOrders: { id: string; sortOrder: number }[]): Promise<void>;
+  findNextPrimaryImage(productId: string): Promise<ProductImage | null>;
   findOptionsByProductId(productId: string): Promise<any[]>;
   findOptionByProductAndId(productId: string, optionId: string): Promise<any | null>;
   deleteOptionById(optionId: string): Promise<void>;

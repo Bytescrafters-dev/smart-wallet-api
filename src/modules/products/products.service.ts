@@ -16,6 +16,8 @@ import { UpdateVariantDto } from './dtos/update-variant.dto';
 import { UpdateProductVariantDto } from './dtos/update-product-variant.dto';
 import { ProductVariantDto } from './dtos/product-variant.dto';
 import { PrismaService } from 'src/common/prisma/prisma.service';
+import { UploadsService } from '../uploads/uploads.service';
+import { UpdateProductImageDto } from './dtos/update-product-image.dto';
 
 @Injectable()
 export class ProductsService {
@@ -27,6 +29,7 @@ export class ProductsService {
     @Inject(TOKENS.CategoryRepo)
     private readonly categoryRepo: ICategoryRepository,
     private readonly prisma: PrismaService,
+    private readonly uploadsService: UploadsService,
   ) {}
 
   private slugify(input: string): string {
@@ -369,8 +372,8 @@ export class ProductsService {
     if (!product) throw new NotFoundException('Product not found');
 
     const variants = await this.productRepo.findVariantsByProductId(productId);
-    
-    return variants.map(variant => ({
+
+    return variants.map((variant) => ({
       id: variant.id,
       sku: variant.sku,
       barcode: variant.barcode,
@@ -380,7 +383,7 @@ export class ProductsService {
       widthCm: variant.widthCm,
       heightCm: variant.heightCm,
       active: variant.active,
-      optionValueIds: variant.optionValues.map(ov => ov.optionValueId),
+      optionValueIds: variant.optionValues.map((ov) => ov.optionValueId),
       prices: variant.prices,
       inventory: variant.inventory,
       createdAt: variant.createdAt,
@@ -393,36 +396,49 @@ export class ProductsService {
     if (!product) throw new NotFoundException('Product not found');
 
     // Check for duplicate SKUs within the batch
-    const skus = dto.variants.map(v => v.sku);
-    const duplicateSkus = skus.filter((sku, index) => skus.indexOf(sku) !== index);
+    const skus = dto.variants.map((v) => v.sku);
+    const duplicateSkus = skus.filter(
+      (sku, index) => skus.indexOf(sku) !== index,
+    );
     if (duplicateSkus.length > 0) {
-      throw new BadRequestException(`Duplicate SKUs in batch: ${duplicateSkus.join(', ')}`);
+      throw new BadRequestException(
+        `Duplicate SKUs in batch: ${duplicateSkus.join(', ')}`,
+      );
     }
 
     // Check if SKUs already exist in database
     const existingVariants = await this.productRepo.findVariantsBySkus(skus);
     if (existingVariants.length > 0) {
-      const existingSkus = existingVariants.map(v => v.sku);
-      throw new BadRequestException(`SKUs already exist: ${existingSkus.join(', ')}`);
+      const existingSkus = existingVariants.map((v) => v.sku);
+      throw new BadRequestException(
+        `SKUs already exist: ${existingSkus.join(', ')}`,
+      );
     }
 
     // Validate all option value IDs exist and belong to the product
-    const allOptionValueIds = [...new Set(dto.variants.flatMap(v => v.optionValueIds))];
-    const optionValues = await this.productRepo.findOptionValuesByIds(allOptionValueIds);
-    
+    const allOptionValueIds = [
+      ...new Set(dto.variants.flatMap((v) => v.optionValueIds)),
+    ];
+    const optionValues =
+      await this.productRepo.findOptionValuesByIds(allOptionValueIds);
+
     const validOptionValueIds = optionValues
-      .filter(ov => ov.option.productId === productId)
-      .map(ov => ov.id);
-    
-    const invalidIds = allOptionValueIds.filter(id => !validOptionValueIds.includes(id));
+      .filter((ov) => ov.option.productId === productId)
+      .map((ov) => ov.id);
+
+    const invalidIds = allOptionValueIds.filter(
+      (id) => !validOptionValueIds.includes(id),
+    );
     if (invalidIds.length > 0) {
-      throw new BadRequestException(`Invalid option value IDs: ${invalidIds.join(', ')}`);
+      throw new BadRequestException(
+        `Invalid option value IDs: ${invalidIds.join(', ')}`,
+      );
     }
 
     // Create variants in transaction
     return this.prisma.$transaction(async (tx) => {
       const createdVariants: any[] = [];
-      
+
       for (const variantData of dto.variants) {
         // Create variant
         const variant = await tx.productVariant.create({
@@ -474,12 +490,16 @@ export class ProductsService {
 
         createdVariants.push(variant);
       }
-      
+
       return createdVariants;
     });
   }
 
-  async updateVariant(productId: string, variantId: string, dto: UpdateProductVariantDto) {
+  async updateVariant(
+    productId: string,
+    variantId: string,
+    dto: UpdateProductVariantDto,
+  ) {
     const product = await this.productRepo.findById(productId);
     if (!product) throw new NotFoundException('Product not found');
 
@@ -510,7 +530,7 @@ export class ProductsService {
         await tx.productVariantOptionValue.deleteMany({
           where: { variantId },
         });
-        
+
         for (const optionValueId of dto.optionValueIds) {
           await tx.productVariantOptionValue.create({
             data: { variantId, optionValueId },
@@ -535,7 +555,7 @@ export class ProductsService {
         await tx.productVariantPrice.deleteMany({
           where: { variantId },
         });
-        
+
         for (const price of dto.prices) {
           await tx.productVariantPrice.create({
             data: {
@@ -571,16 +591,16 @@ export class ProductsService {
 
     return this.prisma.$transaction(async (tx) => {
       const updatedVariants: any[] = [];
-      
+
       for (const variantData of variants) {
         if (!variantData.sku) continue;
-        
+
         const existingVariant = await tx.productVariant.findFirst({
           where: { sku: variantData.sku, productId },
         });
-        
+
         if (!existingVariant) continue;
-        
+
         const updatedVariant = await tx.productVariant.update({
           where: { id: existingVariant.id },
           data: {
@@ -593,11 +613,132 @@ export class ProductsService {
             active: variantData.active,
           },
         });
-        
+
         updatedVariants.push(updatedVariant);
       }
-      
+
       return updatedVariants;
     });
+  }
+
+  async addProductImage(
+    productId: string,
+    imageData: {
+      storageKey: string;
+      url: string;
+      alt?: string;
+      isPrimary?: boolean;
+      sortOrder?: number;
+      width?: number;
+      height?: number;
+      mimeType?: string;
+      bytes?: number;
+      checksum?: string;
+    },
+  ) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    if (imageData.isPrimary) {
+      await this.productRepo.setPrimaryImage(productId, '');
+    }
+
+    return this.productRepo.addImage({
+      productId,
+      storageKey: imageData.storageKey,
+      url: imageData.url,
+      alt: imageData.alt ?? null,
+      isPrimary: imageData.isPrimary ?? false,
+      sortOrder: imageData.sortOrder ?? 0,
+      width: imageData.width ?? null,
+      height: imageData.height ?? null,
+      mimeType: imageData.mimeType ?? null,
+      bytes: imageData.bytes ?? null,
+      checksum: imageData.checksum ?? null,
+    });
+  }
+
+  async deleteProductImage(productId: string, imageId: string) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    const image = await this.productRepo.findImageById(imageId);
+
+    if (!image || image.productId !== productId) {
+      throw new NotFoundException('Image not found');
+    }
+
+    // Delete from S3 first
+    try {
+      await this.uploadsService.deleteFile(image.storageKey);
+    } catch (error) {
+      console.error('Failed to delete file from S3:', error);
+    }
+
+    // Delete from database
+    await this.productRepo.deleteImage(imageId);
+
+    // If deleted image was primary, set another image as primary
+    if (image.isPrimary) {
+      const nextImage = await this.productRepo.findNextPrimaryImage(productId);
+      if (nextImage) {
+        await this.productRepo.setPrimaryImage(productId, nextImage.id);
+      }
+    }
+
+    return { success: true, message: 'Image deleted successfully' };
+  }
+
+  async updateProductImage(
+    productId: string,
+    imageId: string,
+    dto: UpdateProductImageDto,
+  ) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    const image = await this.productRepo.findImageById(imageId);
+
+    if (!image || image.productId !== productId) {
+      throw new NotFoundException('Image not found');
+    }
+
+    if (dto.isPrimary) {
+      await this.productRepo.setPrimaryImage(productId, imageId);
+    }
+
+    const updateData: any = {};
+    if (dto.alt !== undefined) updateData.alt = dto.alt;
+    if (dto.isPrimary !== undefined) updateData.isPrimary = dto.isPrimary;
+    if (dto.sortOrder !== undefined) updateData.sortOrder = dto.sortOrder;
+
+    return this.productRepo.updateImage(imageId, updateData);
+  }
+
+  async reorderProductImages(
+    productId: string,
+    imageOrders: { id: string; sortOrder: number }[],
+  ) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    // Validate all images belong to the product
+    for (const { id } of imageOrders) {
+      const image = await this.productRepo.findImageById(id);
+      if (!image || image.productId !== productId) {
+        throw new NotFoundException(`Image ${id} not found`);
+      }
+    }
+
+    await this.productRepo.updateImageSortOrders(imageOrders);
+
+    return { success: true, message: 'Images reordered successfully' };
+  }
+
+  async getProductImages(productId: string) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    return this.productRepo.findImagesByProductId(productId);
   }
 }

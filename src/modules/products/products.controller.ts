@@ -19,6 +19,8 @@ import { CreateVariantsDto } from './dtos/create-variants.dto';
 import { UpdateVariantDto } from './dtos/update-variant.dto';
 import { UpdateProductVariantDto } from './dtos/update-product-variant.dto';
 import { ProductVariantDto } from './dtos/product-variant.dto';
+import { UpdateProductImageDto } from './dtos/update-product-image.dto';
+import { ReorderImagesDto } from './dtos/reorder-images.dto';
 
 @Controller('products')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -146,5 +148,39 @@ export class ProductsController {
     @Body() variants: ProductVariantDto[],
   ) {
     return this.productsService.bulkUpdateVariants(productId, variants);
+  }
+
+  @Get('product-images/:productId/images')
+  @Roles('ADMIN')
+  getProductImages(@Param('productId') productId: string) {
+    return this.productsService.getProductImages(productId);
+  }
+
+  @Delete('product-images/:productId/images/:imageId')
+  @Roles('ADMIN')
+  deleteProductImage(
+    @Param('productId') productId: string,
+    @Param('imageId') imageId: string,
+  ) {
+    return this.productsService.deleteProductImage(productId, imageId);
+  }
+
+  @Patch('product-images/:productId/images/reorder')
+  @Roles('ADMIN')
+  reorderProductImages(
+    @Param('productId') productId: string,
+    @Body() dto: ReorderImagesDto,
+  ) {
+    return this.productsService.reorderProductImages(productId, dto.images);
+  }
+
+  @Patch('product-images/:productId/images/:imageId')
+  @Roles('ADMIN')
+  updateProductImage(
+    @Param('productId') productId: string,
+    @Param('imageId') imageId: string,
+    @Body() dto: UpdateProductImageDto,
+  ) {
+    return this.productsService.updateProductImage(productId, imageId, dto);
   }
 }

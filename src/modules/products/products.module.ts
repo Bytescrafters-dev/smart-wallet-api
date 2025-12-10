@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TOKENS } from 'src/common/constants/tokens';
 import { ProductsController } from './products.controller';
@@ -7,9 +7,10 @@ import { ProductRepository } from './infra/product.repository';
 import { StoreRepository } from '../stores/infra/store.repository';
 import { CategoryRepository } from '../categories/infra/category.repository';
 import { PlatformJwtModule } from '../auth/jwt.module';
+import { UploadsModule } from '../uploads/uploads.module';
 
 @Module({
-  imports: [ConfigModule, PlatformJwtModule],
+  imports: [ConfigModule, PlatformJwtModule, forwardRef(() => UploadsModule)],
   controllers: [ProductsController],
   providers: [
     ProductsService,
