@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { IProductRepository, ProductListParams } from '../interfaces/product.repository.interface';
+import {
+  IProductRepository,
+  ProductListParams,
+} from '../interfaces/product.repository.interface';
 import { Product, ProductImage } from '@prisma/client';
 
 @Injectable()
@@ -18,7 +21,15 @@ export class ProductRepository implements IProductRepository {
   }
 
   list(params: ProductListParams) {
-    const { storeId, q, categoryId, active, skip = 0, take = 20, orderBy } = params;
+    const {
+      storeId,
+      q,
+      categoryId,
+      active,
+      skip = 0,
+      take = 20,
+      orderBy,
+    } = params;
     return this.prisma.product.findMany({
       where: {
         storeId,
@@ -26,9 +37,40 @@ export class ProductRepository implements IProductRepository {
         ...(categoryId ? { categoryId } : {}),
         ...(active === undefined ? {} : { active }),
       },
-      orderBy: orderBy ? { [orderBy.field]: orderBy.dir } : { createdAt: 'desc' },
+      include: {
+        images: {
+          where: { isPrimary: true },
+          take: 1,
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        _count: {
+          select: {
+            variants: true,
+          },
+        },
+      },
+      orderBy: orderBy
+        ? { [orderBy.field]: orderBy.dir }
+        : { createdAt: 'desc' },
       skip,
       take,
+    });
+  }
+
+  count(params: Omit<ProductListParams, 'skip' | 'take' | 'orderBy'>) {
+    const { storeId, q, categoryId, active } = params;
+    return this.prisma.product.count({
+      where: {
+        storeId,
+        ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
+        ...(categoryId ? { categoryId } : {}),
+        ...(active === undefined ? {} : { active }),
+      },
     });
   }
 
@@ -79,21 +121,28 @@ export class ProductRepository implements IProductRepository {
   findImagesByProductId(productId: string) {
     return this.prisma.productImage.findMany({
       where: { productId },
-      orderBy: [
-        { isPrimary: 'desc' },
-        { sortOrder: 'asc' },
-      ],
+      orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
     });
   }
 
-  updateImage(imageId: string, data: Partial<Omit<ProductImage, 'id' | 'productId' | 'storageKey' | 'url' | 'createdAt' | 'updatedAt'>>) {
+  updateImage(
+    imageId: string,
+    data: Partial<
+      Omit<
+        ProductImage,
+        'id' | 'productId' | 'storageKey' | 'url' | 'createdAt' | 'updatedAt'
+      >
+    >,
+  ) {
     return this.prisma.productImage.update({
       where: { id: imageId },
       data,
     });
   }
 
-  async updateImageSortOrders(imageOrders: { id: string; sortOrder: number }[]) {
+  async updateImageSortOrders(
+    imageOrders: { id: string; sortOrder: number }[],
+  ) {
     await this.prisma.$transaction(
       imageOrders.map(({ id, sortOrder }) =>
         this.prisma.productImage.update({
@@ -222,7 +271,7 @@ export class ProductRepository implements IProductRepository {
 
   async createVariantOptionValues(variantId: string, optionValueIds: string[]) {
     await this.prisma.productVariantOptionValue.createMany({
-      data: optionValueIds.map(optionValueId => ({
+      data: optionValueIds.map((optionValueId) => ({
         variantId,
         optionValueId,
       })),
@@ -235,7 +284,7 @@ export class ProductRepository implements IProductRepository {
         where: { variantId },
       }),
       this.prisma.productVariantOptionValue.createMany({
-        data: optionValueIds.map(optionValueId => ({
+        data: optionValueIds.map((optionValueId) => ({
           variantId,
           optionValueId,
         })),

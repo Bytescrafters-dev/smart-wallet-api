@@ -14,6 +14,7 @@ export interface IProductRepository {
   findById(id: string): Promise<Product | null>;
   findBySlug(storeId: string, slug: string): Promise<Product | null>;
   list(params: ProductListParams): Promise<Product[]>;
+  count(params: Omit<ProductListParams, 'skip' | 'take' | 'orderBy'>): Promise<number>;
   create(data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product>;
   update(id: string, data: Partial<Omit<Product, 'id' | 'storeId'>>): Promise<Product>;
   remove(id: string): Promise<void>;

@@ -163,20 +163,11 @@ export class ProductsService {
         take: limit,
         orderBy: { field: 'createdAt', dir: 'desc' },
       }),
-      this.prisma.product.count({
-        where: {
-          storeId,
-          ...(filters.title || filters.slug
-            ? {
-                title: {
-                  contains: filters.title || filters.slug,
-                  mode: 'insensitive',
-                },
-              }
-            : {}),
-          ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
-          ...(filters.active !== undefined ? { active: filters.active } : {}),
-        },
+      this.productRepo.count({
+        storeId,
+        q: filters.title || filters.slug,
+        categoryId: filters.categoryId,
+        active: filters.active,
       }),
     ]);
 
@@ -740,5 +731,30 @@ export class ProductsService {
     if (!product) throw new NotFoundException('Product not found');
 
     return this.productRepo.findImagesByProductId(productId);
+  }
+
+  async deleteProduct(productId: string) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    // Get all images for S3 cleanup
+    const images = await this.productRepo.findImagesByProductId(productId);
+
+    // Delete images from S3 (don't fail if some can't be deleted)
+    const s3Results = await Promise.allSettled(
+      images.map(image => this.uploadsService.deleteFile(image.storageKey))
+    );
+
+    // Log S3 failures but continue
+    s3Results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        console.error(`S3 delete failed for ${images[index].storageKey}:`, result.reason);
+      }
+    });
+
+    // Delete product from database (Prisma handles cascading)
+    await this.productRepo.remove(productId);
+
+    return { message: 'Product deleted successfully' };
   }
 }

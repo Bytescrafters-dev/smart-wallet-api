@@ -41,8 +41,6 @@ export class UserController {
   @Patch('/my-profile')
   updateMyProfile(@Req() req: any, @Body() dto: UpdateUserDto) {
     const userId: string = req.user?.sub;
-
-    console.log(dto);
     return this.userService.updateUserById(userId, dto);
   }
 }

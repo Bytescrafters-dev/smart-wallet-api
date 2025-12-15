@@ -67,7 +67,6 @@ export class UploadsController {
     )
     file: Express.Multer.File,
   ) {
-    console.log('came here');
     const imageData = await this.uploadService.uploadProductImage(
       file.originalname,
       file.buffer,

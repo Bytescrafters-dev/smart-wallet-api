@@ -39,6 +39,12 @@ export class ProductsController {
     return this.productsService.getProductById(id);
   }
 
+  @Delete(':id')
+  @Roles('ADMIN')
+  deleteProduct(@Param('id') id: string) {
+    return this.productsService.deleteProduct(id);
+  }
+
   @Get('store/:storeId')
   @Roles('ADMIN')
   getAllProducts(
