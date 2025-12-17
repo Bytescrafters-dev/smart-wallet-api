@@ -13,6 +13,7 @@ import {
 import { JwtAuthGuard, Roles, RolesGuard } from 'src/common/auth';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dtos/create-product.dto';
+import { UpdateProductDto } from './dtos/update-product.dto';
 import { AddOptionDto } from './dtos/add-option.dto';
 import { AddVariantDto } from './dtos/add-variant.dto';
 import { CreateVariantsDto } from './dtos/create-variants.dto';
@@ -31,6 +32,12 @@ export class ProductsController {
   @Roles('ADMIN')
   createProduct(@Body() dto: CreateProductDto) {
     return this.productsService.createProduct(dto);
+  }
+
+  @Put(':id')
+  @Roles('ADMIN')
+  updateProduct(@Param('id') id: string, @Body() dto: UpdateProductDto) {
+    return this.productsService.updateProduct(id, dto);
   }
 
   @Get(':id')

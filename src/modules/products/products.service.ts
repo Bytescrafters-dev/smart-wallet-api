@@ -9,6 +9,7 @@ import { IProductRepository } from './interfaces/product.repository.interface';
 import { IStoreRepository } from '../stores/interfaces/store.repository.interface';
 import { ICategoryRepository } from '../categories/interfaces/category.repository.interface';
 import { CreateProductDto } from './dtos/create-product.dto';
+import { UpdateProductDto } from './dtos/update-product.dto';
 import { AddOptionDto } from './dtos/add-option.dto';
 import { AddVariantDto } from './dtos/add-variant.dto';
 import { CreateVariantsDto } from './dtos/create-variants.dto';
@@ -96,6 +97,48 @@ export class ProductsService {
       active: dto.active ?? true,
       categoryId: dto.categoryId ?? null,
       profileId: dto.profileId ?? null,
+    });
+  }
+
+  async updateProduct(id: string, dto: UpdateProductDto) {
+    const product = await this.productRepo.findById(id);
+    if (!product) throw new NotFoundException('Product not found.');
+
+    if (dto.categoryId) {
+      const category = await this.categoryRepo.findById(dto.categoryId);
+      if (!category) throw new NotFoundException('Category not found.');
+      if (category.storeId !== product.storeId) {
+        throw new BadRequestException(
+          'Category must belong to the same store.',
+        );
+      }
+    }
+
+    if (dto.profileId) {
+      const profile = await this.storeRepo.findShippingProfileById(
+        dto.profileId,
+      );
+      if (!profile) throw new NotFoundException('Shipping profile not found.');
+      if (profile.storeId !== product.storeId) {
+        throw new BadRequestException(
+          'Shipping profile must belong to the same store.',
+        );
+      }
+    }
+
+    let uniqueSlug = dto.slug;
+    if (dto.slug && dto.slug !== product.slug) {
+      const baseSlug = this.slugify(dto.slug);
+      uniqueSlug = await this.ensureUniqueSlug(product.storeId, baseSlug);
+    }
+
+    return this.productRepo.update(id, {
+      title: dto.title,
+      slug: uniqueSlug,
+      description: dto.description,
+      active: dto.active,
+      categoryId: dto.categoryId,
+      profileId: dto.profileId,
     });
   }
 
