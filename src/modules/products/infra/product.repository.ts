@@ -20,7 +20,7 @@ export class ProductRepository implements IProductRepository {
     });
   }
 
-  list(params: ProductListParams) {
+  async list(params: ProductListParams) {
     const {
       storeId,
       q,
@@ -30,7 +30,7 @@ export class ProductRepository implements IProductRepository {
       take = 20,
       orderBy,
     } = params;
-    return this.prisma.product.findMany({
+    const products = await this.prisma.product.findMany({
       where: {
         storeId,
         ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
@@ -48,6 +48,13 @@ export class ProductRepository implements IProductRepository {
             name: true,
           },
         },
+        variants: {
+          select: {
+            prices: {
+              select: { amount: true },
+            },
+          },
+        },
         _count: {
           select: {
             variants: true,
@@ -59,6 +66,15 @@ export class ProductRepository implements IProductRepository {
         : { createdAt: 'desc' },
       skip,
       take,
+    });
+
+    return products.map((product) => {
+      const allPrices = product.variants.flatMap((v) =>
+        v.prices.map((p) => p.amount),
+      );
+      const minPrice = allPrices.length > 0 ? Math.min(...allPrices) : null;
+      const { variants, ...productData } = product;
+      return { ...productData, minPrice };
     });
   }
 

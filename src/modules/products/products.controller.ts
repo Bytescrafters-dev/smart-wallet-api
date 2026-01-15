@@ -10,7 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard, Roles, RolesGuard } from 'src/common/auth';
+import { JwtAuthGuard, Roles, RolesGuard, Public } from 'src/common/auth';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
@@ -41,7 +41,6 @@ export class ProductsController {
   }
 
   @Get(':id')
-  @Roles('ADMIN')
   getProductById(@Param('id') id: string) {
     return this.productsService.getProductById(id);
   }
@@ -53,7 +52,7 @@ export class ProductsController {
   }
 
   @Get('store/:storeId')
-  @Roles('ADMIN')
+  @Public()
   getAllProducts(
     @Param('storeId') storeId: string,
     @Query('title') title?: string,
@@ -76,6 +75,7 @@ export class ProductsController {
   }
 
   @Get(':storeSlug/:productSlug')
+  @Public()
   getBySlug(
     @Param('storeSlug') storeSlug: string,
     @Param('productSlug') productSlug: string,
