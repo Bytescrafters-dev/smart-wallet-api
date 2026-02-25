@@ -62,6 +62,7 @@ export class ProductsController {
     @Query('active') active?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('currency') currency?: string,
   ) {
     return this.productsService.getAllProducts(storeId, {
       title,
@@ -71,6 +72,7 @@ export class ProductsController {
       active: active ? active === 'true' : undefined,
       page: page ? parseInt(page) : 1,
       limit: limit ? parseInt(limit) : 10,
+      currency,
     });
   }
 

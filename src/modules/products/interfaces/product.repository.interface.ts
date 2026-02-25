@@ -8,6 +8,7 @@ export type ProductListParams = {
   skip?: number;
   take?: number;
   orderBy?: { field: 'createdAt' | 'title'; dir: 'asc' | 'desc' };
+  currency?: string;
 };
 
 export interface IProductRepository {
@@ -41,4 +42,7 @@ export interface IProductRepository {
   updateVariantOptionValues(variantId: string, optionValueIds: string[]): Promise<void>;
   findOptionValuesByIds(optionValueIds: string[]): Promise<any[]>;
   findVariantsBySkus(skus: string[]): Promise<any[]>;
+  findOptionsByProductIdWithValues(productId: string): Promise<any[]>;
+  findVariantsByProductIdWithRelations(productId: string): Promise<any[]>;
+  countVariantsByOptionId(optionId: string): Promise<number>;
 }

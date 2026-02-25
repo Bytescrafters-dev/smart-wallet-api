@@ -190,6 +190,7 @@ export class ProductsService {
       active?: boolean;
       page?: number;
       limit?: number;
+      currency?: string;
     },
   ) {
     const page = filters.page || 1;
@@ -205,6 +206,7 @@ export class ProductsService {
         skip,
         take: limit,
         orderBy: { field: 'createdAt', dir: 'desc' },
+        currency: filters.currency,
       }),
       this.productRepo.count({
         storeId,
@@ -272,14 +274,8 @@ export class ProductsService {
     );
     if (!option) throw new NotFoundException('Option not found');
 
-    // Check if option is used by existing variants
-    const variantCount = await this.prisma.productVariantOptionValue.count({
-      where: {
-        optionValue: {
-          optionId: optionId,
-        },
-      },
-    });
+    const variantCount =
+      await this.productRepo.countVariantsByOptionId(optionId);
 
     if (variantCount > 0) {
       throw new BadRequestException(
@@ -341,22 +337,9 @@ export class ProductsService {
     if (!p) throw new NotFoundException('Product not found');
 
     const [images, options, variants] = await Promise.all([
-      this.prisma.productImage.findMany({ where: { productId: p.id } }),
-      this.prisma.productOption.findMany({
-        where: { productId: p.id },
-        include: { values: true },
-        orderBy: { position: 'asc' },
-      }),
-      this.prisma.productVariant.findMany({
-        where: { productId: p.id },
-        include: {
-          optionValues: {
-            include: { optionValue: { include: { option: true } } },
-          },
-          prices: true,
-          inventory: true,
-        },
-      }),
+      this.productRepo.findImagesByProductId(p.id),
+      this.productRepo.findOptionsByProductIdWithValues(p.id),
+      this.productRepo.findVariantsByProductIdWithRelations(p.id),
     ]);
 
     const mappedOptions = options.map((o) => ({
@@ -364,7 +347,7 @@ export class ProductsService {
       name: o.name,
       values: o.values
         .sort((a, b) => a.position - b.position)
-        .map((v) => ({ id: v.id, value: v.value })),
+        .map((v) => ({ id: v.id, value: v.value, position: v.position })),
     }));
 
     const resolvePrice = (prices: any[]) => {
@@ -382,7 +365,7 @@ export class ProductsService {
       id: v.id,
       sku: v.sku,
       price: resolvePrice(v.prices),
-      inStock: (v.inventory?.quantity ?? 0) - (v.inventory?.reserved ?? 0) > 0,
+      inStock: (v.inventory?.quantity ?? 0) - (v.inventory?.reserved ?? 0),
       optionValueMap: Object.fromEntries(
         v.optionValues.map((ov) => [
           ov.optionValue.option.name,
@@ -785,13 +768,16 @@ export class ProductsService {
 
     // Delete images from S3 (don't fail if some can't be deleted)
     const s3Results = await Promise.allSettled(
-      images.map(image => this.uploadsService.deleteFile(image.storageKey))
+      images.map((image) => this.uploadsService.deleteFile(image.storageKey)),
     );
 
     // Log S3 failures but continue
     s3Results.forEach((result, index) => {
       if (result.status === 'rejected') {
-        console.error(`S3 delete failed for ${images[index].storageKey}:`, result.reason);
+        console.error(
+          `S3 delete failed for ${images[index].storageKey}:`,
+          result.reason,
+        );
       }
     });
 

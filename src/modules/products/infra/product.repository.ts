@@ -29,7 +29,15 @@ export class ProductRepository implements IProductRepository {
       skip = 0,
       take = 20,
       orderBy,
+      currency,
     } = params;
+
+    const store = await this.prisma.store.findUnique({
+      where: { id: storeId },
+      select: { defaultCurrency: true },
+    });
+    const resolvedCurrency = currency || store?.defaultCurrency || 'AUD';
+
     const products = await this.prisma.product.findMany({
       where: {
         storeId,
@@ -51,7 +59,8 @@ export class ProductRepository implements IProductRepository {
         variants: {
           select: {
             prices: {
-              select: { amount: true },
+              where: { currency: resolvedCurrency },
+              select: { amount: true, currency: true },
             },
           },
         },
@@ -74,7 +83,7 @@ export class ProductRepository implements IProductRepository {
       );
       const minPrice = allPrices.length > 0 ? Math.min(...allPrices) : null;
       const { variants, ...productData } = product;
-      return { ...productData, minPrice };
+      return { ...productData, minPrice, currency: resolvedCurrency };
     });
   }
 
@@ -319,6 +328,37 @@ export class ProductRepository implements IProductRepository {
     return this.prisma.productVariant.findMany({
       where: { sku: { in: skus } },
       select: { sku: true },
+    });
+  }
+
+  findOptionsByProductIdWithValues(productId: string) {
+    return this.prisma.productOption.findMany({
+      where: { productId },
+      include: { values: true },
+      orderBy: { position: 'asc' },
+    });
+  }
+
+  findVariantsByProductIdWithRelations(productId: string) {
+    return this.prisma.productVariant.findMany({
+      where: { productId },
+      include: {
+        optionValues: {
+          include: { optionValue: { include: { option: true } } },
+        },
+        prices: true,
+        inventory: true,
+      },
+    });
+  }
+
+  countVariantsByOptionId(optionId: string) {
+    return this.prisma.productVariantOptionValue.count({
+      where: {
+        optionValue: {
+          optionId,
+        },
+      },
     });
   }
 }
