@@ -7,17 +7,21 @@ import { RefreshDto } from './dtos/refresh.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login') //tested
+  @Post('login')
   login(@Body() dto: LoginDto) {
-    return this.authService.login(dto.email, dto.password);
+    const merge =
+      dto.sessionId && dto.storeId
+        ? { sessionId: dto.sessionId, storeId: dto.storeId }
+        : undefined;
+    return this.authService.login(dto.email, dto.password, merge);
   }
 
-  @Post('refresh') //tested
+  @Post('refresh')
   refresh(@Body() dto: RefreshDto) {
     return this.authService.refresh(dto.refresh);
   }
 
-  @Post('logout') //test later with frontend
+  @Post('logout')
   logout(@Body() dto: RefreshDto) {
     return this.authService.revoke(dto.refresh);
   }

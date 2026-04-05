@@ -361,4 +361,30 @@ export class ProductRepository implements IProductRepository {
       },
     });
   }
+
+  findVariantAvailabilityAtStore(variantId: string, storeId: string) {
+    return this.prisma.productVariant.findFirst({
+      where: { id: variantId, product: { storeId } },
+      include: { inventory: true },
+    });
+  }
+
+  findProductAvailabilityAtStore(productId: string, storeId: string) {
+    return this.prisma.product.findFirst({
+      where: { id: productId, storeId },
+    });
+  }
+
+  resolveActivePriceForProductVariant(variantId: string, currency: string) {
+    const now = new Date();
+    return this.prisma.productVariantPrice.findFirst({
+      where: {
+        variantId,
+        currency,
+        validFrom: { lte: now },
+        OR: [{ validTo: null }, { validTo: { gt: now } }],
+      },
+      orderBy: { validFrom: 'desc' },
+    });
+  }
 }

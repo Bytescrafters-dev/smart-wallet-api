@@ -15,20 +15,42 @@ export interface IProductRepository {
   findById(id: string): Promise<Product | null>;
   findBySlug(storeId: string, slug: string): Promise<Product | null>;
   list(params: ProductListParams): Promise<Product[]>;
-  count(params: Omit<ProductListParams, 'skip' | 'take' | 'orderBy'>): Promise<number>;
-  create(data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product>;
-  update(id: string, data: Partial<Omit<Product, 'id' | 'storeId'>>): Promise<Product>;
+  count(
+    params: Omit<ProductListParams, 'skip' | 'take' | 'orderBy'>,
+  ): Promise<number>;
+  create(
+    data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Product>;
+  update(
+    id: string,
+    data: Partial<Omit<Product, 'id' | 'storeId'>>,
+  ): Promise<Product>;
   remove(id: string): Promise<void>;
-  addImage(img: Omit<ProductImage, 'id' | 'createdAt' | 'updatedAt'>): Promise<ProductImage>;
+  addImage(
+    img: Omit<ProductImage, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<ProductImage>;
   setPrimaryImage(productId: string, imageId: string): Promise<void>;
   deleteImage(imageId: string): Promise<void>;
   findImageById(imageId: string): Promise<ProductImage | null>;
   findImagesByProductId(productId: string): Promise<ProductImage[]>;
-  updateImage(imageId: string, data: Partial<Omit<ProductImage, 'id' | 'productId' | 'storageKey' | 'url' | 'createdAt' | 'updatedAt'>>): Promise<ProductImage>;
-  updateImageSortOrders(imageOrders: { id: string; sortOrder: number }[]): Promise<void>;
+  updateImage(
+    imageId: string,
+    data: Partial<
+      Omit<
+        ProductImage,
+        'id' | 'productId' | 'storageKey' | 'url' | 'createdAt' | 'updatedAt'
+      >
+    >,
+  ): Promise<ProductImage>;
+  updateImageSortOrders(
+    imageOrders: { id: string; sortOrder: number }[],
+  ): Promise<void>;
   findNextPrimaryImage(productId: string): Promise<ProductImage | null>;
   findOptionsByProductId(productId: string): Promise<any[]>;
-  findOptionByProductAndId(productId: string, optionId: string): Promise<any | null>;
+  findOptionByProductAndId(
+    productId: string,
+    optionId: string,
+  ): Promise<any | null>;
   deleteOptionById(optionId: string): Promise<void>;
   findByIdWithRelations(id: string): Promise<any | null>;
   findVariantsByProductId(productId: string): Promise<any[]>;
@@ -38,11 +60,29 @@ export interface IProductRepository {
   findVariantById(variantId: string): Promise<any | null>;
   createVariantPrice(data: any): Promise<any>;
   createVariantInventory(data: any): Promise<any>;
-  createVariantOptionValues(variantId: string, optionValueIds: string[]): Promise<void>;
-  updateVariantOptionValues(variantId: string, optionValueIds: string[]): Promise<void>;
+  createVariantOptionValues(
+    variantId: string,
+    optionValueIds: string[],
+  ): Promise<void>;
+  updateVariantOptionValues(
+    variantId: string,
+    optionValueIds: string[],
+  ): Promise<void>;
   findOptionValuesByIds(optionValueIds: string[]): Promise<any[]>;
   findVariantsBySkus(skus: string[]): Promise<any[]>;
   findOptionsByProductIdWithValues(productId: string): Promise<any[]>;
   findVariantsByProductIdWithRelations(productId: string): Promise<any[]>;
   countVariantsByOptionId(optionId: string): Promise<number>;
+  findVariantAvailabilityAtStore(
+    variantId: string,
+    storeId: string,
+  ): Promise<any>;
+  findProductAvailabilityAtStore(
+    productId: string,
+    storeId: string,
+  ): Promise<any>;
+  resolveActivePriceForProductVariant(
+    variantId: string,
+    currency: string,
+  ): Promise<any>;
 }
