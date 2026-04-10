@@ -10,32 +10,30 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard, Roles, RolesGuard, Public } from 'src/common/auth';
+import { AdminGuard } from 'src/common/guards/admin.guard';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { AddOptionDto } from './dtos/add-option.dto';
 import { AddVariantDto } from './dtos/add-variant.dto';
 import { CreateVariantsDto } from './dtos/create-variants.dto';
-import { UpdateVariantDto } from './dtos/update-variant.dto';
 import { UpdateProductVariantDto } from './dtos/update-product-variant.dto';
 import { ProductVariantDto } from './dtos/product-variant.dto';
 import { UpdateProductImageDto } from './dtos/update-product-image.dto';
 import { ReorderImagesDto } from './dtos/reorder-images.dto';
 
 @Controller('products')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   createProduct(@Body() dto: CreateProductDto) {
     return this.productsService.createProduct(dto);
   }
 
   @Put(':id')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   updateProduct(@Param('id') id: string, @Body() dto: UpdateProductDto) {
     return this.productsService.updateProduct(id, dto);
   }
@@ -46,13 +44,12 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   deleteProduct(@Param('id') id: string) {
     return this.productsService.deleteProduct(id);
   }
 
   @Get('store/:storeId')
-  @Public()
   getAllProducts(
     @Param('storeId') storeId: string,
     @Query('title') title?: string,
@@ -77,7 +74,6 @@ export class ProductsController {
   }
 
   @Get(':storeSlug/:productSlug')
-  @Public()
   getBySlug(
     @Param('storeSlug') storeSlug: string,
     @Param('productSlug') productSlug: string,
@@ -87,19 +83,19 @@ export class ProductsController {
   }
 
   @Post('product-options/:id/options')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   addOption(@Param('id') productId: string, @Body() dto: AddOptionDto) {
     return this.productsService.addOption(productId, dto);
   }
 
   @Get('product-options/:productId/options')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   getAllProductOptionsByProductId(@Param('productId') productId: string) {
     return this.productsService.getAllProductOptionsByProductId(productId);
   }
 
   @Get('product-options/:productId/options/:optionId')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   getProductOptionById(
     @Param('productId') productId: string,
     @Param('optionId') optionId: string,
@@ -108,7 +104,7 @@ export class ProductsController {
   }
 
   @Delete('product-options/:productId/options/:optionId')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   deleteProductOptionById(
     @Param('productId') productId: string,
     @Param('optionId') optionId: string,
@@ -117,19 +113,19 @@ export class ProductsController {
   }
 
   @Post(':id/variants')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   addVariant(@Param('id') productId: string, @Body() dto: AddVariantDto) {
     return this.productsService.addVariant(productId, dto);
   }
 
   @Get('product-variants/:productId/variants')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   getProductVariants(@Param('productId') productId: string) {
     return this.productsService.getProductVariants(productId);
   }
 
   @Post('product-variants/:productId/variants/bulk')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   createVariantsBulk(
     @Param('productId') productId: string,
     @Body() dto: CreateVariantsDto,
@@ -138,7 +134,7 @@ export class ProductsController {
   }
 
   @Put('product-variants/:productId/variants/:variantId')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   updateVariant(
     @Param('productId') productId: string,
     @Param('variantId') variantId: string,
@@ -148,7 +144,7 @@ export class ProductsController {
   }
 
   @Delete('product-variants/:productId/variants/:variantId')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   deleteVariant(
     @Param('productId') productId: string,
     @Param('variantId') variantId: string,
@@ -157,7 +153,7 @@ export class ProductsController {
   }
 
   @Patch('product-variants/:productId/variants/bulk-update')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   bulkUpdateVariants(
     @Param('productId') productId: string,
     @Body() variants: ProductVariantDto[],
@@ -166,13 +162,13 @@ export class ProductsController {
   }
 
   @Get('product-images/:productId/images')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   getProductImages(@Param('productId') productId: string) {
     return this.productsService.getProductImages(productId);
   }
 
   @Delete('product-images/:productId/images/:imageId')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   deleteProductImage(
     @Param('productId') productId: string,
     @Param('imageId') imageId: string,
@@ -181,7 +177,7 @@ export class ProductsController {
   }
 
   @Patch('product-images/:productId/images/reorder')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   reorderProductImages(
     @Param('productId') productId: string,
     @Body() dto: ReorderImagesDto,
@@ -190,7 +186,7 @@ export class ProductsController {
   }
 
   @Patch('product-images/:productId/images/:imageId')
-  @Roles('ADMIN')
+  @UseGuards(AdminGuard)
   updateProductImage(
     @Param('productId') productId: string,
     @Param('imageId') imageId: string,

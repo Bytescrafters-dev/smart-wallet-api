@@ -1,6 +1,8 @@
 export const TOKENS = {
   UserRepo: Symbol('UserRepository'),
   RefreshTokenRepo: Symbol('RefreshTokenRepository'),
+  StoreUserRepo: Symbol('StoreUserRepository'),
+  StoreUserRefreshTokenRepo: Symbol('StoreUserRefreshTokenRepository'),
   ProductRepo: Symbol('ProductRepository'),
   VariantRepo: Symbol('VariantRepository'),
   CategoryRepo: Symbol('CategoryRepository'),

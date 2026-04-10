@@ -24,7 +24,7 @@ export class CartService {
 
   async addToCart(
     dto: AddToCartDto,
-    context: { userId?: string; sessionId?: string },
+    context: { storeUserId?: string; sessionId?: string },
   ): Promise<{ cartId: string; sessionId?: string; items: any[] }> {
     const store = await this.storeRepo.findBySlug(dto.storeSlug);
     if (!store) throw new NotFoundException('Store not found');
@@ -66,17 +66,17 @@ export class CartService {
     let newSessionId: string | undefined;
     let cartId: string;
 
-    if (context.userId) {
-      const existing = await this.cartRepo.findByUserId(
+    if (context.storeUserId) {
+      const existing = await this.cartRepo.findByStoreUserId(
         store.id,
-        context.userId,
+        context.storeUserId,
       );
       if (existing) {
         cartId = existing.id;
       } else {
-        const created = await this.cartRepo.createForUser(
+        const created = await this.cartRepo.createForStoreUser(
           store.id,
-          context.userId,
+          context.storeUserId,
           dto.currency,
         );
         cartId = created.id;
@@ -117,13 +117,13 @@ export class CartService {
 
   async getCart(
     storeSlug: string,
-    context: { userId?: string; sessionId?: string },
+    context: { storeUserId?: string; sessionId?: string },
   ) {
     const store = await this.storeRepo.findBySlug(storeSlug);
     if (!store) throw new NotFoundException('Store not found');
 
-    if (context.userId) {
-      return this.cartRepo.findByUserId(store.id, context.userId);
+    if (context.storeUserId) {
+      return this.cartRepo.findByStoreUserId(store.id, context.storeUserId);
     }
     if (context.sessionId) {
       return this.cartRepo.findBySessionId(store.id, context.sessionId);
@@ -150,21 +150,21 @@ export class CartService {
 
   async mergeOnLogin(
     sessionId: string,
-    userId: string,
+    storeUserId: string,
     storeId: string,
   ): Promise<void> {
     const guestCart = await this.cartRepo.findBySessionId(storeId, sessionId);
     if (!guestCart) return;
 
-    const existingUserCart = await this.cartRepo.findByUserId(storeId, userId);
+    const existingUserCart = await this.cartRepo.findByStoreUserId(storeId, storeUserId);
     let userCartId: string;
 
     if (existingUserCart) {
       userCartId = existingUserCart.id;
     } else {
-      const newCart = await this.cartRepo.createForUser(
+      const newCart = await this.cartRepo.createForStoreUser(
         storeId,
-        userId,
+        storeUserId,
         guestCart.currency,
       );
       userCartId = newCart.id;

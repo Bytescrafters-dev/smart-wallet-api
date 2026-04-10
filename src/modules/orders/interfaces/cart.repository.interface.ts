@@ -25,18 +25,18 @@ export type CartItemDetail = CartItem & {
 export type CartWithItemDetails = Cart & { items: CartItemDetail[] };
 
 export interface ICartRepository {
-  findByUserId(
+  findByStoreUserId(
     storeId: string,
-    userId: string,
+    storeUserId: string,
   ): Promise<CartWithItemDetails | null>;
   findBySessionId(
     storeId: string,
     sessionId: string,
   ): Promise<CartWithItemDetails | null>;
   findById(cartId: string): Promise<CartWithItemDetails | null>;
-  createForUser(
+  createForStoreUser(
     storeId: string,
-    userId: string,
+    storeUserId: string,
     currency: string,
   ): Promise<Cart>;
   createForSession(

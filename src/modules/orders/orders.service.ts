@@ -13,7 +13,7 @@ export class OrdersService {
   ) {
     const cart = await this.prisma.cart.findUnique({
       where: { id: cartId },
-      include: { items: true, user: true },
+      include: { items: true },
     });
     if (!cart || cart.items.length === 0) throw new BadRequestException('Cart empty');
 
@@ -33,7 +33,7 @@ export class OrdersService {
       const order = await tx.order.create({
         data: {
           storeId,
-          userId: cart.userId ?? null,
+          storeUserId: cart.storeUserId ?? null,
           status: 'PENDING',
           currency: cart.currency,
           subtotal,

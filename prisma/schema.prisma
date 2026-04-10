@@ -7,26 +7,53 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
+  id            String        @id @default(cuid())
+  email         String        @unique
+  passwordHash  String
+  firstName     String?
+  lastName      String?
+  phone         String?
+  avatar        String?
+  refreshTokens RefreshToken[]
+  adminStores   AdminStore[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model StoreUser {
+  id           String      @id @default(cuid())
+  storeId      String
+  store        Store       @relation(fields: [storeId], references: [id])
+  email        String
   passwordHash String
   firstName    String?
   lastName     String?
   phone        String?
   avatar       String?
-  status       UserStatus @default(ACTIVE)
-  role         Role     @default(USER)
-  refreshTokens RefreshToken[]
+  status       UserStatus  @default(ACTIVE)
   orders       Order[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  carts        Cart[]
+  refreshTokens StoreUserRefreshToken[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
-  Carts Cart[]
-
-  @@index([role])
+  @@unique([storeId, email])
+  @@index([storeId])
   @@index([status])
-  @@index([createdAt])
-  @@index([status, role, createdAt, id])
+}
+
+model AdminStore {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  storeId   String
+  store     Store      @relation(fields: [storeId], references: [id])
+  role      AdminRole  @default(MANAGER)
+  createdAt DateTime   @default(now())
+
+  @@unique([userId, storeId])
+  @@index([userId])
+  @@index([storeId])
 }
 
 enum UserStatus {
@@ -34,18 +61,28 @@ enum UserStatus {
   INACTIVE
 }
 
-enum Role { 
-    USER 
-    ADMIN 
+enum AdminRole {
+  OWNER
+  MANAGER
+  VIEWER
 }
 
 model RefreshToken {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  tokenId   String   @unique      // random id (jti)
+  tokenId   String   @unique
   revokedAt DateTime?
   createdAt DateTime @default(now())
+}
+
+model StoreUserRefreshToken {
+  id          String    @id @default(cuid())
+  storeUserId String
+  storeUser   StoreUser @relation(fields: [storeUserId], references: [id])
+  tokenId     String    @unique
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
 }
 
 model Store {
@@ -66,8 +103,10 @@ model Store {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  Categories Category[]
-  Orders Order[]
+  Categories  Category[]
+  Orders      Order[]
+  storeUsers  StoreUser[]
+  adminStores AdminStore[]
 }
 
 model StoreSetting {
@@ -296,17 +335,17 @@ model ShippingOption {
 }
 
 model Cart {
-  id        String   @id @default(cuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id])
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  sessionId String?  @unique
-  currency  String
-  items     CartItem[]
-  expiresAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String     @id @default(cuid())
+  storeId     String
+  store       Store      @relation(fields: [storeId], references: [id])
+  storeUserId String?
+  storeUser   StoreUser? @relation(fields: [storeUserId], references: [id])
+  sessionId   String?    @unique
+  currency    String
+  items       CartItem[]
+  expiresAt   DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model CartItem {
@@ -327,12 +366,12 @@ enum OrderStatus {
 }
 
 model Order {
-  id         String     @id @default(cuid())
-  storeId    String
-  store      Store      @relation(fields: [storeId], references: [id])
-  userId     String?
-  user       User?      @relation(fields: [userId], references: [id])
-  status     OrderStatus @default(PENDING)
+  id          String      @id @default(cuid())
+  storeId     String
+  store       Store       @relation(fields: [storeId], references: [id])
+  storeUserId String?
+  storeUser   StoreUser?  @relation(fields: [storeUserId], references: [id])
+  status      OrderStatus @default(PENDING)
   currency   String
   subtotal   Int
   shipping   Int @default(0)

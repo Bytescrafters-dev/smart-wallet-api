@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   FileTypeValidator,
+  Inject,
   MaxFileSizeValidator,
   ParseFilePipe,
   Post,
@@ -10,57 +11,68 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { UploadsService } from './uploads.service';
-import { JwtAuthGuard, Roles, RolesGuard } from '../../common/auth';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadsService } from './uploads.service';
 import { UserService } from '../users/user.service';
-import { UploadProductImageDto } from './dtos/upload-product-image.dto';
 import { ProductsService } from '../products/products.service';
+import { AdminGuard } from 'src/common/guards/admin.guard';
+import { StoreUserGuard } from 'src/common/guards/store-user.guard';
+import { UploadProductImageDto } from './dtos/upload-product-image.dto';
+import { TOKENS } from 'src/common/constants/tokens';
+import { IStoreUserRepository } from '../store-users/interfaces/store-user.repository.interface';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
-@Controller('admin/uploads')
+const AVATAR_PIPE = new ParseFilePipe({
+  validators: [
+    new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }), // 2MB
+    new FileTypeValidator({ fileType: /(jpeg|jpg|png)$/ }),
+  ],
+});
+
+@Controller()
 export class UploadsController {
   constructor(
     private readonly uploadService: UploadsService,
-    private readonly usersService: UserService,
+    private readonly userService: UserService,
     private readonly productsService: ProductsService,
+    @Inject(TOKENS.StoreUserRepo)
+    private readonly storeUserRepo: IStoreUserRepository,
   ) {}
 
-  @Post('avatar')
+  // ── Admin avatar ───────────────────────────────────────────────────────────
+
+  @Post('admin/uploads/avatar')
+  @UseGuards(AdminGuard)
   @UseInterceptors(FileInterceptor('avatar'))
-  async uploadAvatar(
-    @Req() req: any,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          //new MaxFileSizeValidator({ maxSize: 1000 }),
-          new FileTypeValidator({ fileType: 'image/jpeg' }),
-        ],
-      }),
-    )
-    file: Express.Multer.File,
-  ) {
-    const userId: string = req.user?.sub;
-
-    const { url } = await this.uploadService.uploadAvatar(
-      file.originalname,
-      file.buffer,
-    );
-
-    this.usersService.updateUserById(userId, { avatar: url });
-
-    return { message: 'Avatar updated successfully', avatarUrl: url };
+  async uploadAdminAvatar(@Req() req: any, @UploadedFile(AVATAR_PIPE) file: Express.Multer.File) {
+    const userId: string = req.user.sub;
+    const { url } = await this.uploadService.uploadAvatar(file.originalname, file.buffer, `admins/${userId}`);
+    await this.userService.updateAvatar(userId, url);
+    return { avatarUrl: url };
   }
 
-  @Post('product-image')
+  // ── Store user avatar ──────────────────────────────────────────────────────
+
+  @Post('store/uploads/avatar')
+  @UseGuards(StoreUserGuard)
+  @UseInterceptors(FileInterceptor('avatar'))
+  async uploadStoreUserAvatar(@Req() req: any, @UploadedFile(AVATAR_PIPE) file: Express.Multer.File) {
+    const storeUserId: string = req.user.sub;
+    const { url } = await this.uploadService.uploadAvatar(file.originalname, file.buffer, `store-users/${storeUserId}`);
+    await this.storeUserRepo.updateAvatar(storeUserId, url);
+    return { avatarUrl: url };
+  }
+
+  // ── Product image (admin only) ─────────────────────────────────────────────
+
+  @Post('admin/uploads/product-image')
+  @UseGuards(AdminGuard)
   @UseInterceptors(FileInterceptor('image'))
   async uploadProductImage(
     @Body() dto: UploadProductImageDto,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB
+          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }),
           new FileTypeValidator({ fileType: /(jpeg|jpg|png)$/ }),
         ],
       }),
@@ -73,25 +85,19 @@ export class UploadsController {
       dto.productId,
     );
 
-    const productImage = await this.productsService.addProductImage(
-      dto.productId,
-      {
-        storageKey: imageData.storageKey,
-        url: imageData.url,
-        alt: dto.alt,
-        isPrimary: dto.isPrimary ?? false,
-        sortOrder: dto.sortOrder ?? 0,
-        width: imageData.width,
-        height: imageData.height,
-        mimeType: imageData.mimeType ?? undefined,
-        bytes: imageData.bytes,
-        checksum: imageData.checksum,
-      },
-    );
+    const productImage = await this.productsService.addProductImage(dto.productId, {
+      storageKey: imageData.storageKey,
+      url: imageData.url,
+      alt: dto.alt,
+      isPrimary: dto.isPrimary ?? false,
+      sortOrder: dto.sortOrder ?? 0,
+      width: imageData.width,
+      height: imageData.height,
+      mimeType: imageData.mimeType ?? undefined,
+      bytes: imageData.bytes,
+      checksum: imageData.checksum,
+    });
 
-    return {
-      message: 'Product image uploaded successfully',
-      image: productImage,
-    };
+    return { image: productImage };
   }
 }

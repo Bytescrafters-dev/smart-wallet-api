@@ -37,4 +37,12 @@ export class StoreRepository implements IStoreRepository {
       select: { id: true, storeId: true },
     });
   }
+
+  async findByAdminUserId(userId: string): Promise<{ id: string; name: string; slug: string }[]> {
+    const rows = await this.prisma.adminStore.findMany({
+      where: { userId },
+      select: { store: { select: { id: true, name: true, slug: true } } },
+    });
+    return rows.map((r) => r.store);
+  }
 }

@@ -26,13 +26,30 @@ async function main() {
   });
 
   const adminHash = await bcrypt.hash('admin123', 12);
-  await prisma.user.upsert({
+  const admin = await prisma.user.upsert({
     where: { email: 'info.bytecrafters@gmail.com' },
-    update: { role: 'ADMIN' },
+    update: {},
     create: {
       email: 'info.bytecrafters@gmail.com',
       passwordHash: adminHash,
-      role: 'ADMIN',
+    },
+  });
+  await prisma.adminStore.upsert({
+    where: { userId_storeId: { userId: admin.id, storeId: store.id } },
+    update: {},
+    create: { userId: admin.id, storeId: store.id, role: 'OWNER' },
+  });
+
+  const customerHash = await bcrypt.hash('customer123', 12);
+  await prisma.storeUser.upsert({
+    where: { storeId_email: { storeId: store.id, email: 'customer@example.com' } },
+    update: {},
+    create: {
+      storeId: store.id,
+      email: 'customer@example.com',
+      passwordHash: customerHash,
+      firstName: 'Jane',
+      lastName: 'Doe',
     },
   });
 

@@ -64,12 +64,12 @@ async function enrichCart(
 export class CartRepository implements ICartRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findByUserId(
+  async findByStoreUserId(
     storeId: string,
-    userId: string,
+    storeUserId: string,
   ): Promise<CartWithItemDetails | null> {
     const raw = await this.prisma.cart.findFirst({
-      where: { storeId, userId },
+      where: { storeId, storeUserId },
       include: CART_INCLUDE,
     });
     return enrichCart(this.prisma, raw);
@@ -94,12 +94,12 @@ export class CartRepository implements ICartRepository {
     return enrichCart(this.prisma, raw);
   }
 
-  createForUser(
+  createForStoreUser(
     storeId: string,
-    userId: string,
+    storeUserId: string,
     currency: string,
   ): Promise<Cart> {
-    return this.prisma.cart.create({ data: { storeId, userId, currency } });
+    return this.prisma.cart.create({ data: { storeId, storeUserId, currency } });
   }
 
   createForSession(

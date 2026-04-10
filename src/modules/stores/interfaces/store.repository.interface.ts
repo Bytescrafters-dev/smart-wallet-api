@@ -8,4 +8,5 @@ export interface IStoreRepository {
   updateById(id: string, data: Partial<Omit<Store, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Store>;
   deleteById(id: string): Promise<void>;
   findShippingProfileById(profileId: string): Promise<Pick<ShippingProfile, 'id' | 'storeId'> | null>;
+  findByAdminUserId(userId: string): Promise<{ id: string; name: string; slug: string }[]>;
 }

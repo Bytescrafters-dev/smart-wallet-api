@@ -27,8 +27,8 @@ export class UploadsService {
     return `https://${this.bucket}.s3.${this.region}.amazonaws.com/${key}`;
   }
 
-  async uploadAvatar(fileName: string, file: Buffer) {
-    const key = `avatars/${Date.now()}-${fileName}`;
+  async uploadAvatar(fileName: string, file: Buffer, prefix: string) {
+    const key = `avatars/${prefix}/${Date.now()}-${fileName}`;
 
     await this.s3Client.send(
       new PutObjectCommand({
@@ -38,9 +38,7 @@ export class UploadsService {
       }),
     );
 
-    const url = this.buildPublicUrl(key);
-
-    return { key, url };
+    return { key, url: this.buildPublicUrl(key) };
   }
 
   async uploadProductImage(
