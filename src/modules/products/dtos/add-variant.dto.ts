@@ -2,7 +2,7 @@ import { IsString, IsArray, IsOptional, IsNumber } from 'class-validator';
 
 export class AddVariantDto {
   @IsString()
-  sku: string;
+  sku!: string;
 
   @IsOptional()
   @IsString()
@@ -10,14 +10,14 @@ export class AddVariantDto {
 
   @IsArray()
   @IsString({ each: true })
-  optionValueIds: string[];
+  optionValueIds!: string[];
 
   @IsOptional()
   @IsString()
   currency?: string;
 
   @IsNumber()
-  priceCents: number;
+  priceCents!: number;
 
   @IsOptional()
   @IsNumber()

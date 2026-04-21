@@ -103,7 +103,6 @@ export class AuthService {
     storeSlug: string,
     merge?: { sessionId: string },
   ) {
-    console.log(storeSlug, email, password, merge);
     const store = await this.storeRepo.findBySlug(storeSlug);
     if (!store) throw new NotFoundException('Store not found');
 
@@ -112,7 +111,6 @@ export class AuthService {
       email,
     );
 
-    console.log(storeUser);
     if (!storeUser) throw new UnauthorizedException();
 
     const ok = await bcrypt.compare(password, storeUser.passwordHash);

@@ -34,9 +34,8 @@ export class AuthController {
     @Body() dto: LoginDto,
     @Req() req: Request,
   ) {
-    console.log('came here');
-    console.log(dto);
     const sessionId: string | undefined = req.cookies?.['sid'];
+
     return this.authService.storeUserLogin(
       dto.email,
       dto.password,

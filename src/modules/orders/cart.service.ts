@@ -128,6 +128,7 @@ export class CartService {
     if (context.sessionId) {
       return this.cartRepo.findBySessionId(store.id, context.sessionId);
     }
+
     return null;
   }
 
@@ -156,7 +157,10 @@ export class CartService {
     const guestCart = await this.cartRepo.findBySessionId(storeId, sessionId);
     if (!guestCart) return;
 
-    const existingUserCart = await this.cartRepo.findByStoreUserId(storeId, storeUserId);
+    const existingUserCart = await this.cartRepo.findByStoreUserId(
+      storeId,
+      storeUserId,
+    );
     let userCartId: string;
 
     if (existingUserCart) {

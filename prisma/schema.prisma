@@ -33,6 +33,7 @@ model StoreUser {
   status       UserStatus  @default(ACTIVE)
   orders       Order[]
   carts        Cart[]
+  addresses    Address[]
   refreshTokens StoreUserRefreshToken[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
@@ -382,8 +383,12 @@ model Order {
   shippingOption   ShippingOption? @relation(fields: [shippingOptionId], references: [id])
   paymentId  String?
   items      OrderItem[]
-  addressToId String?
-  addressTo  Address? @relation("OrderShipTo", fields: [addressToId], references: [id])
+  shippingAddress1   String?
+  shippingAddress2   String?
+  shippingCity       String?
+  shippingState      String?
+  shippingPostalCode String?
+  shippingCountry    String?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 }
@@ -402,16 +407,19 @@ model OrderItem {
 }
 
 model Address {
-  id         String   @id @default(cuid())
-  name       String?
-  phone      String?
-  email      String?
-  address1   String
-  address2   String?
-  city       String
-  state      String?
-  postalCode String
-  country    String
+  id           String    @id @default(cuid())
+  storeUserId  String?
+  storeUser    StoreUser? @relation(fields: [storeUserId], references: [id])
+  label        String?  
+  address1     String
+  address2     String?
+  city         String
+  state        String?
+  isDefault    Boolean
+  postalCode   String
+  country      String  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  Order Order[] @relation("OrderShipTo")
+  @@index([storeUserId])
 }

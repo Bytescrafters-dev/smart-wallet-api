@@ -1,16 +1,27 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { TOKENS } from 'src/common/constants/tokens';
-import { ICategoryRepository, CategoryListParams } from './interfaces/category.repository.interface';
+import {
+  ICategoryRepository,
+  CategoryListParams,
+} from './interfaces/category.repository.interface';
 import { CreateCategoryDto } from './dtos/create-category.dto';
 import { UpdateCategoryDto } from './dtos/update-category.dto';
 import { CategoryQueryDto } from './dtos/category-query.dto';
 import { PrismaService } from 'src/common/prisma/prisma.service';
+import { IStoreRepository } from '../stores/interfaces/store.repository.interface';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @Inject(TOKENS.CategoryRepo)
     private readonly categoryRepo: ICategoryRepository,
+    @Inject(TOKENS.StoreRepo)
+    private readonly storeRepo: IStoreRepository,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -24,7 +35,10 @@ export class CategoriesService {
       .replace(/-+/g, '-');
   }
 
-  private async ensureUniqueSlug(storeId: string, baseSlug: string): Promise<string> {
+  private async ensureUniqueSlug(
+    storeId: string,
+    baseSlug: string,
+  ): Promise<string> {
     let candidate = baseSlug;
     let suffix = 2;
 
@@ -58,7 +72,9 @@ export class CategoriesService {
       const parent = await this.categoryRepo.findById(dto.parentId);
       if (!parent) throw new NotFoundException('Parent category not found.');
       if (parent.storeId !== dto.storeId) {
-        throw new BadRequestException('Parent category must belong to the same store.');
+        throw new BadRequestException(
+          'Parent category must belong to the same store.',
+        );
       }
     }
 
@@ -84,6 +100,19 @@ export class CategoriesService {
     return this.categoryRepo.list(params);
   }
 
+  async getCategoriesByStoreSlug(storeSlug: string, query: CategoryQueryDto) {
+    const store = await this.storeRepo.findBySlug(storeSlug);
+    if (!store) throw new NotFoundException('Store not found slug');
+
+    const params: CategoryListParams = {
+      storeId: store.id,
+      q: query.q,
+      parentId: query.parentId,
+    };
+
+    return this.categoryRepo.listByStoreId(params);
+  }
+
   async getCategoryById(id: string) {
     const category = await this.categoryRepo.findById(id);
     if (!category) {
@@ -102,7 +131,9 @@ export class CategoriesService {
       const parent = await this.categoryRepo.findById(dto.parentId);
       if (!parent) throw new NotFoundException('Parent category not found.');
       if (parent.storeId !== category.storeId) {
-        throw new BadRequestException('Parent category must belong to the same store.');
+        throw new BadRequestException(
+          'Parent category must belong to the same store.',
+        );
       }
     }
 
@@ -110,7 +141,10 @@ export class CategoriesService {
     if (dto.name) updateData.name = dto.name;
     if (dto.parentId !== undefined) updateData.parentId = dto.parentId;
     if (dto.slug) {
-      const uniqueSlug = await this.ensureUniqueSlug(category.storeId, dto.slug);
+      const uniqueSlug = await this.ensureUniqueSlug(
+        category.storeId,
+        dto.slug,
+      );
       updateData.slug = uniqueSlug;
     }
 

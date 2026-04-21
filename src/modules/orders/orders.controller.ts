@@ -59,6 +59,7 @@ export class OrdersController {
   }
 
   @Get('cart')
+  @UseGuards(OptionalStoreUserGuard)
   getCart(@Query('storeSlug') storeSlug: string, @Req() req: Request) {
     const storeUserId: string | undefined =
       (req as any).user?.type === 'store_user'
@@ -78,20 +79,20 @@ export class OrdersController {
     return this.cartService.updateItem(dto);
   }
 
-  @Post('checkout')
-  @UseGuards(StoreUserGuard)
-  checkout(@Body() b: any, @Req() req: any) {
-    return this.ordersService.checkout(
-      b.storeId,
-      b.cartId,
-      b.addressTo,
-      b.shippingOptionId,
-    );
-  }
+  // @Post('checkout')
+  // @UseGuards(StoreUserGuard)
+  // checkout(@Body() b: any, @Req() req: any) {
+  //   return this.ordersService.checkout(
+  //     b.storeId,
+  //     b.cartId,
+  //     b.addressTo,
+  //     b.shippingOptionId,
+  //   );
+  // }
 
-  @Post('orders/:id/confirm')
-  @UseGuards(StoreUserGuard)
-  confirm(@Param('id') id: string) {
-    return this.ordersService.confirm(id);
-  }
+  // @Post('orders/:id/confirm')
+  // @UseGuards(StoreUserGuard)
+  // confirm(@Param('id') id: string) {
+  //   return this.ordersService.confirm(id);
+  // }
 }

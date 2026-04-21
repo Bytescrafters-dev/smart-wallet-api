@@ -1,7 +1,10 @@
 import { StoreUser } from '@prisma/client';
 
 export interface IStoreUserRepository {
-  findByStoreAndEmail(storeId: string, email: string): Promise<StoreUser | null>;
+  findByStoreAndEmail(
+    storeId: string,
+    email: string,
+  ): Promise<StoreUser | null>;
   findById(id: string): Promise<StoreUser | null>;
   create(data: {
     storeId: string;
@@ -11,4 +14,8 @@ export interface IStoreUserRepository {
     lastName?: string;
   }): Promise<StoreUser>;
   updateAvatar(id: string, avatar: string): Promise<void>;
+  updateStoreUserProfile(
+    id: string,
+    data: { firstName?: string; lastName?: string; phone?: string },
+  ): Promise<Omit<StoreUser, 'passwordHash'>>;
 }

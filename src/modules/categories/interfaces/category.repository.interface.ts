@@ -15,11 +15,21 @@ export type CategoryListResponse = {
   limit: number;
 };
 
+export type StoreCategoryListResponse = {
+  data: Category[];
+};
+
 export interface ICategoryRepository {
   findById(id: string): Promise<Category | null>;
   findBySlug(storeId: string, slug: string): Promise<Category | null>;
   list(params: CategoryListParams): Promise<CategoryListResponse>;
-  create(data: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>): Promise<Category>;
-  update(id: string, data: Partial<Omit<Category, 'id' | 'storeId'>>): Promise<Category>;
+  create(
+    data: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Category>;
+  update(
+    id: string,
+    data: Partial<Omit<Category, 'id' | 'storeId'>>,
+  ): Promise<Category>;
   remove(id: string): Promise<void>;
+  listByStoreId(params: CategoryListParams): Promise<StoreCategoryListResponse>;
 }

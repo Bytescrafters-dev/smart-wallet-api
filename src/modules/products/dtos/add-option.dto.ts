@@ -2,7 +2,7 @@ import { IsString, IsArray, IsOptional, IsNumber } from 'class-validator';
 
 export class AddOptionDto {
   @IsString()
-  name: string;
+  name!: string;
 
   @IsOptional()
   @IsNumber()

@@ -1,14 +1,20 @@
-import { IsString, IsOptional, IsNotEmpty, IsBoolean, Matches } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNotEmpty,
+  IsBoolean,
+  Matches,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateProductDto {
   @IsString()
   @IsNotEmpty()
-  storeId: string;
+  storeId!: string;
 
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title!: string;
 
   @IsOptional()
   @IsString()

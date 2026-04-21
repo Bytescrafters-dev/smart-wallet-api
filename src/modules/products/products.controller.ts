@@ -49,9 +49,9 @@ export class ProductsController {
     return this.productsService.deleteProduct(id);
   }
 
-  @Get('store/:storeId')
+  @Get('store/:storeSlug')
   getAllProducts(
-    @Param('storeId') storeId: string,
+    @Param('storeSlug') storeSlug: string,
     @Query('title') title?: string,
     @Query('slug') slug?: string,
     @Query('categoryId') categoryId?: string,
@@ -61,7 +61,7 @@ export class ProductsController {
     @Query('limit') limit?: string,
     @Query('currency') currency?: string,
   ) {
-    return this.productsService.getAllProducts(storeId, {
+    return this.productsService.getAllProducts(storeSlug, {
       title,
       slug,
       categoryId,

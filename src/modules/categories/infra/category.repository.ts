@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { ICategoryRepository, CategoryListParams } from '../interfaces/category.repository.interface';
+import {
+  ICategoryRepository,
+  CategoryListParams,
+} from '../interfaces/category.repository.interface';
 import { Category, Prisma } from '@prisma/client';
 
 @Injectable()
@@ -40,6 +43,27 @@ export class CategoryRepository implements ICategoryRepository {
       total,
       page: Math.floor(skip / take) + 1,
       limit: take,
+    };
+  }
+
+  async listByStoreId(params: CategoryListParams) {
+    const { storeId, q, parentId } = params;
+    const where: Prisma.CategoryWhereInput = {
+      storeId,
+      parentId: parentId === undefined ? undefined : parentId,
+      ...(q ? { name: { contains: q, mode: 'insensitive' as const } } : {}),
+    };
+
+    const [data] = await Promise.all([
+      this.prisma.category.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.category.count({ where }),
+    ]);
+
+    return {
+      data,
     };
   }
 

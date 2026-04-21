@@ -1,11 +1,19 @@
-import { IsString, IsOptional, IsNumber, IsBoolean, IsArray, ValidateNested, ArrayNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+  ArrayNotEmpty,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { VariantPriceDto } from './variant-price.dto';
 import { VariantInventoryDto } from './variant-inventory.dto';
 
 export class ProductVariantDto {
   @IsString()
-  sku: string;
+  sku!: string;
 
   @IsOptional()
   @IsString()
@@ -32,19 +40,19 @@ export class ProductVariantDto {
   heightCm?: number;
 
   @IsBoolean()
-  active: boolean;
+  active!: boolean;
 
   @IsArray()
   @ArrayNotEmpty()
   @IsString({ each: true })
-  optionValueIds: string[];
+  optionValueIds!: string[];
 
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => VariantPriceDto)
-  prices: VariantPriceDto[];
+  prices!: VariantPriceDto[];
 
   @ValidateNested()
   @Type(() => VariantInventoryDto)
-  inventory: VariantInventoryDto;
+  inventory!: VariantInventoryDto;
 }

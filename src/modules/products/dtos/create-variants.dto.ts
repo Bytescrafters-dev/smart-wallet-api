@@ -7,5 +7,5 @@ export class CreateVariantsDto {
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => ProductVariantDto)
-  variants: ProductVariantDto[];
+  variants!: ProductVariantDto[];
 }

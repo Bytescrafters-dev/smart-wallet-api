@@ -1,3 +1,4 @@
+/// <reference types="multer" />
 import {
   Body,
   Controller,
@@ -43,9 +44,16 @@ export class UploadsController {
   @Post('admin/uploads/avatar')
   @UseGuards(AdminGuard)
   @UseInterceptors(FileInterceptor('avatar'))
-  async uploadAdminAvatar(@Req() req: any, @UploadedFile(AVATAR_PIPE) file: Express.Multer.File) {
+  async uploadAdminAvatar(
+    @Req() req: any,
+    @UploadedFile(AVATAR_PIPE) file: Express.Multer.File,
+  ) {
     const userId: string = req.user.sub;
-    const { url } = await this.uploadService.uploadAvatar(file.originalname, file.buffer, `admins/${userId}`);
+    const { url } = await this.uploadService.uploadAvatar(
+      file.originalname,
+      file.buffer,
+      `admins/${userId}`,
+    );
     await this.userService.updateAvatar(userId, url);
     return { avatarUrl: url };
   }
@@ -55,9 +63,16 @@ export class UploadsController {
   @Post('store/uploads/avatar')
   @UseGuards(StoreUserGuard)
   @UseInterceptors(FileInterceptor('avatar'))
-  async uploadStoreUserAvatar(@Req() req: any, @UploadedFile(AVATAR_PIPE) file: Express.Multer.File) {
+  async uploadStoreUserAvatar(
+    @Req() req: any,
+    @UploadedFile(AVATAR_PIPE) file: Express.Multer.File,
+  ) {
     const storeUserId: string = req.user.sub;
-    const { url } = await this.uploadService.uploadAvatar(file.originalname, file.buffer, `store-users/${storeUserId}`);
+    const { url } = await this.uploadService.uploadAvatar(
+      file.originalname,
+      file.buffer,
+      `store-users/${storeUserId}`,
+    );
     await this.storeUserRepo.updateAvatar(storeUserId, url);
     return { avatarUrl: url };
   }
@@ -85,18 +100,21 @@ export class UploadsController {
       dto.productId,
     );
 
-    const productImage = await this.productsService.addProductImage(dto.productId, {
-      storageKey: imageData.storageKey,
-      url: imageData.url,
-      alt: dto.alt,
-      isPrimary: dto.isPrimary ?? false,
-      sortOrder: dto.sortOrder ?? 0,
-      width: imageData.width,
-      height: imageData.height,
-      mimeType: imageData.mimeType ?? undefined,
-      bytes: imageData.bytes,
-      checksum: imageData.checksum,
-    });
+    const productImage = await this.productsService.addProductImage(
+      dto.productId,
+      {
+        storageKey: imageData.storageKey,
+        url: imageData.url,
+        alt: dto.alt,
+        isPrimary: dto.isPrimary ?? false,
+        sortOrder: dto.sortOrder ?? 0,
+        width: imageData.width,
+        height: imageData.height,
+        mimeType: imageData.mimeType ?? undefined,
+        bytes: imageData.bytes,
+        checksum: imageData.checksum,
+      },
+    );
 
     return { image: productImage };
   }

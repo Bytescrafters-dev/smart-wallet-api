@@ -181,7 +181,7 @@ export class ProductsService {
   }
 
   async getAllProducts(
-    storeId: string,
+    storeSlug: string,
     filters: {
       title?: string;
       slug?: string;
@@ -193,13 +193,16 @@ export class ProductsService {
       currency?: string;
     },
   ) {
+    const store = await this.storeRepo.findBySlug(storeSlug);
+    if (!store) throw new NotFoundException('Store not found slug');
+
     const page = filters.page || 1;
     const limit = filters.limit || 10;
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
       this.productRepo.list({
-        storeId,
+        storeId: store.id,
         q: filters.title || filters.slug,
         categoryId: filters.categoryId,
         active: filters.active,
@@ -209,7 +212,7 @@ export class ProductsService {
         currency: filters.currency,
       }),
       this.productRepo.count({
-        storeId,
+        storeId: store.id,
         q: filters.title || filters.slug,
         categoryId: filters.categoryId,
         active: filters.active,

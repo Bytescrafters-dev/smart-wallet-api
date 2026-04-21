@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminGuard } from 'src/common/guards/admin.guard';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dtos/create-category.dto';
@@ -16,11 +26,20 @@ export class CategoriesController {
   }
 
   @Get('stores/:storeId')
+  @UseGuards(AdminGuard)
   getCategories(
     @Param('storeId') storeId: string,
     @Query() query: CategoryQueryDto,
   ) {
     return this.categoriesService.getCategories(storeId, query);
+  }
+
+  @Get('stores/:storeSlug/slug')
+  getCategoriesByStoreSlug(
+    @Param('storeSlug') storeSlug: string,
+    @Query() query: CategoryQueryDto,
+  ) {
+    return this.categoriesService.getCategoriesByStoreSlug(storeSlug, query);
   }
 
   @Get(':id')

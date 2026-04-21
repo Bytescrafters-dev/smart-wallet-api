@@ -5,6 +5,7 @@ import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
 import { CategoryRepository } from './infra/category.repository';
 import { PlatformJwtModule } from '../auth/jwt.module';
+import { StoreRepository } from '../stores/infra/store.repository';
 
 @Module({
   imports: [ConfigModule, PlatformJwtModule],
@@ -12,6 +13,7 @@ import { PlatformJwtModule } from '../auth/jwt.module';
   providers: [
     CategoriesService,
     { provide: TOKENS.CategoryRepo, useClass: CategoryRepository },
+    { provide: TOKENS.StoreRepo, useClass: StoreRepository },
   ],
   exports: [TOKENS.CategoryRepo, CategoriesService],
 })
