@@ -4,6 +4,7 @@ import { TOKENS } from 'src/common/constants/tokens';
 import { StoresController } from './stores.controller';
 import { StoresService } from './stores.service';
 import { StoreRepository } from './infra/store.repository';
+import { AdminStoreRepository } from './infra/admin-store.repository';
 import { PlatformJwtModule } from '../auth/jwt.module';
 
 @Module({
@@ -12,7 +13,8 @@ import { PlatformJwtModule } from '../auth/jwt.module';
   providers: [
     StoresService,
     { provide: TOKENS.StoreRepo, useClass: StoreRepository },
+    { provide: TOKENS.AdminStoreRepo, useClass: AdminStoreRepository },
   ],
-  exports: [TOKENS.StoreRepo, StoresService],
+  exports: [TOKENS.StoreRepo, TOKENS.AdminStoreRepo, StoresService],
 })
 export class StoresModule {}

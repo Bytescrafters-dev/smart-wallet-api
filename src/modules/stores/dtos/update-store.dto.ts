@@ -7,10 +7,6 @@ export class UpdateStoreDto {
 
   @IsString()
   @IsOptional()
-  slug?: string;
-
-  @IsString()
-  @IsOptional()
   domain?: string;
 
   @IsString()

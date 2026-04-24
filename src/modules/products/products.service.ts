@@ -435,24 +435,50 @@ export class ProductsService {
       );
     }
 
-    // Validate all option value IDs exist and belong to the product
-    const allOptionValueIds = [
-      ...new Set(dto.variants.flatMap((v) => v.optionValueIds)),
-    ];
-    const optionValues =
-      await this.productRepo.findOptionValuesByIds(allOptionValueIds);
+    const productOptions =
+      await this.productRepo.findOptionsByProductId(productId);
+    const hasOptions = productOptions.length > 0;
 
-    const validOptionValueIds = optionValues
-      .filter((ov) => ov.option.productId === productId)
-      .map((ov) => ov.id);
-
-    const invalidIds = allOptionValueIds.filter(
-      (id) => !validOptionValueIds.includes(id),
-    );
-    if (invalidIds.length > 0) {
-      throw new BadRequestException(
-        `Invalid option value IDs: ${invalidIds.join(', ')}`,
+    if (!hasOptions) {
+      if (dto.variants.length > 1) {
+        throw new BadRequestException(
+          'A product with no options can only have one variant',
+        );
+      }
+      if (dto.variants[0].optionValueIds.length > 0) {
+        throw new BadRequestException(
+          'Cannot assign option values to a product that has no options',
+        );
+      }
+    } else {
+      const variantsWithoutOptions = dto.variants.filter(
+        (v) => v.optionValueIds.length === 0,
       );
+      if (variantsWithoutOptions.length > 0) {
+        throw new BadRequestException(
+          'All variants must have option values for a product with options',
+        );
+      }
+
+      // Validate all option value IDs exist and belong to the product
+      const allOptionValueIds = [
+        ...new Set(dto.variants.flatMap((v) => v.optionValueIds)),
+      ];
+      const optionValues =
+        await this.productRepo.findOptionValuesByIds(allOptionValueIds);
+
+      const validOptionValueIds = optionValues
+        .filter((ov) => ov.option.productId === productId)
+        .map((ov) => ov.id);
+
+      const invalidIds = allOptionValueIds.filter(
+        (id) => !validOptionValueIds.includes(id),
+      );
+      if (invalidIds.length > 0) {
+        throw new BadRequestException(
+          `Invalid option value IDs: ${invalidIds.join(', ')}`,
+        );
+      }
     }
 
     // Create variants in transaction

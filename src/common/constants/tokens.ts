@@ -8,6 +8,7 @@ export const TOKENS = {
   CategoryRepo: Symbol('CategoryRepository'),
   InventoryRepo: Symbol('InventoryRepository'),
   StoreRepo: Symbol('StoreRepository'),
+  AdminStoreRepo: Symbol('AdminStoreRepository'),
   CartRepo: Symbol('CartRepository'),
   AddressRepo: Symbol('AddressRepository'),
 };

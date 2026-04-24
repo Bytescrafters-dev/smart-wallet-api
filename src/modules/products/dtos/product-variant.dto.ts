@@ -5,7 +5,6 @@ import {
   IsBoolean,
   IsArray,
   ValidateNested,
-  ArrayNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { VariantPriceDto } from './variant-price.dto';
@@ -43,7 +42,6 @@ export class ProductVariantDto {
   active!: boolean;
 
   @IsArray()
-  @ArrayNotEmpty()
   @IsString({ each: true })
   optionValueIds!: string[];
 

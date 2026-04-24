@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AdminGuard } from 'src/common/guards/admin.guard';
@@ -24,8 +25,8 @@ export class StoresController {
   }
 
   @Get()
-  getAllStores() {
-    return this.storesService.getAllStores();
+  getAllStores(@Req() req: any) {
+    return this.storesService.getAllStores(req.user?.sub);
   }
 
   @Get(':id')
