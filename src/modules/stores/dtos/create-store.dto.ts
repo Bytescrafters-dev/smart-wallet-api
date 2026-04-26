@@ -3,11 +3,11 @@ import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
 export class CreateStoreDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsString()
   @IsNotEmpty()
-  slug: string;
+  slug!: string;
 
   @IsString()
   @IsOptional()
@@ -15,7 +15,7 @@ export class CreateStoreDto {
 
   @IsString()
   @IsNotEmpty()
-  defaultCurrency: string;
+  defaultCurrency!: string;
 
   @IsString()
   @IsOptional()

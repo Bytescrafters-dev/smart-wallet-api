@@ -14,10 +14,14 @@ model User {
   lastName      String?
   phone         String?
   avatar        String?
-  refreshTokens RefreshToken[]
-  adminStores   AdminStore[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  refreshTokens        RefreshToken[]
+  adminStores          AdminStore[]
+  stockOrders          StockOrder[]
+  stockAdjustments     StockAdjustment[]
+  initiatedStockCounts StockCount[]      @relation("StockCountInitiator")
+  confirmedStockCounts StockCount[]      @relation("StockCountConfirmer")
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
 }
 
 model StoreUser {
@@ -99,10 +103,14 @@ model Store {
   warehouses      Warehouse[]
   regions         Region[]
   shippingProfiles ShippingProfile[]
-  products        Product[]
-  carts           Cart[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  products         Product[]
+  carts            Cart[]
+  stockOrders      StockOrder[]
+  suppliers        Supplier[]
+  stockAdjustments StockAdjustment[]
+  stockCounts      StockCount[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   Categories  Category[]
   Orders      Order[]
@@ -241,6 +249,10 @@ model ProductVariant {
   inventory   VariantInventory?
   images      ProductVariantImage[]
   optionValues ProductVariantOptionValue[]
+  inventoryMovements InventoryMovement[]
+  stockOrderLines    StockOrderLine[]
+  stockAdjustments   StockAdjustment[]
+  stockCountLines    StockCountLine[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -266,11 +278,172 @@ model ProductVariantPrice {
 }
 
 model VariantInventory {
-  variantId String  @id
-  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  quantity  Int     @default(0)
-  reserved  Int     @default(0)
-  lowStockThreshold Int @default(5)
+  variantId         String         @id
+  variant           ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  quantity          Int            @default(0)
+  reserved          Int            @default(0)
+  lowStockThreshold Int            @default(5)
+}
+
+enum InventoryMovementType {
+  RESERVED
+  UNRESERVED
+  SALE
+  STOCK_IN
+  ADJUSTMENT
+}
+
+enum InventoryMovementActorType {
+  SYSTEM
+  ADMIN
+}
+
+enum InventoryMovementRefType {
+  ORDER
+  STOCK_ORDER
+  STOCK_ADJUSTMENT
+}
+
+enum StockOrderStatus {
+  CREATED
+  RECEIVED
+  PARTIALLY_RECEIVED
+  REJECTED
+}
+
+enum StockAdjustmentReason {
+  DAMAGE
+  THEFT
+  EXPIRY
+  COUNTING_ERROR
+  OTHER
+}
+
+enum StockCountStatus {
+  OPEN
+  IN_PROGRESS
+  CONFIRMED
+}
+
+model Supplier {
+  id           String         @id @default(cuid())
+  storeId      String
+  store        Store          @relation(fields: [storeId], references: [id])
+  name         String
+  contactName  String?
+  contactEmail String?
+  contactPhone String?
+  address1     String?
+  city         String?
+  country      String?
+  notes        String?
+  stockOrders  StockOrder[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([storeId])
+}
+
+model StockAdjustment {
+  id            String                @id @default(cuid())
+  storeId       String
+  store         Store                 @relation(fields: [storeId], references: [id])
+  variantId     String
+  variant       ProductVariant        @relation(fields: [variantId], references: [id])
+  delta         Int
+  reason        StockAdjustmentReason
+  note          String?
+  adjustedById  String
+  adjustedBy    User                  @relation(fields: [adjustedById], references: [id])
+  adjustedAt    DateTime              @default(now())
+
+  @@index([storeId])
+  @@index([variantId])
+  @@index([adjustedAt])
+}
+
+model StockCount {
+  id             String           @id @default(cuid())
+  storeId        String
+  store          Store            @relation(fields: [storeId], references: [id])
+  status         StockCountStatus @default(OPEN)
+  note           String?
+  initiatedById  String
+  initiatedBy    User             @relation("StockCountInitiator", fields: [initiatedById], references: [id])
+  confirmedById  String?
+  confirmedBy    User?            @relation("StockCountConfirmer", fields: [confirmedById], references: [id])
+  confirmedAt    DateTime?
+  lines          StockCountLine[]
+  createdAt      DateTime         @default(now())
+
+  @@index([storeId])
+  @@index([status])
+}
+
+model StockCountLine {
+  id           String     @id @default(cuid())
+  stockCountId String
+  stockCount   StockCount @relation(fields: [stockCountId], references: [id], onDelete: Cascade)
+  variantId    String
+  variant      ProductVariant @relation(fields: [variantId], references: [id])
+  expectedQty  Int
+  countedQty   Int?
+
+  @@unique([stockCountId, variantId])
+  @@index([stockCountId])
+}
+
+model StockOrder {
+  id           String           @id @default(cuid())
+  storeId      String
+  store        Store            @relation(fields: [storeId], references: [id])
+  receivedById String
+  receivedBy   User             @relation(fields: [receivedById], references: [id])
+  supplierId   String?
+  supplier     Supplier?        @relation(fields: [supplierId], references: [id])
+  invoiceRef   String?
+  status       StockOrderStatus @default(CREATED)
+  note         String?
+  receivedAt   DateTime?
+  lines        StockOrderLine[]
+  createdAt    DateTime         @default(now())
+
+  @@index([storeId])
+  @@index([supplierId])
+  @@index([status])
+  @@index([receivedAt])
+}
+
+model StockOrderLine {
+  id          String         @id @default(cuid())
+  orderId     String
+  order       StockOrder     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId   String
+  variant     ProductVariant @relation(fields: [variantId], references: [id])
+  orderedQty  Int
+  receivedQty Int?
+  costPerUnit Int?
+
+  @@index([orderId])
+  @@index([variantId])
+}
+
+model InventoryMovement {
+  id        String                     @id @default(cuid())
+  variantId String
+  variant   ProductVariant             @relation(fields: [variantId], references: [id])
+  type      InventoryMovementType
+  delta     Int
+  refType   InventoryMovementRefType
+  refId     String
+  actorType InventoryMovementActorType @default(SYSTEM)
+  actorId   String?
+  note      String?
+  createdAt DateTime                   @default(now())
+
+  @@index([variantId])
+  @@index([refType, refId])
+  @@index([createdAt])
 }
 
 model ProductVariantImage {

@@ -11,4 +11,5 @@ export const TOKENS = {
   AdminStoreRepo: Symbol('AdminStoreRepository'),
   CartRepo: Symbol('CartRepository'),
   AddressRepo: Symbol('AddressRepository'),
+  SupplierRepo: Symbol('SupplierRepository'),
 };
