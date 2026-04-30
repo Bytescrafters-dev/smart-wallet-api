@@ -174,7 +174,7 @@ export class ProductsService {
         },
       });
       await tx.variantInventory.create({
-        data: { variantId: v.id, quantity: dto.initialQty ?? 0 },
+        data: { variantId: v.id, quantity: 0 },
       });
       return v;
     });
@@ -225,6 +225,21 @@ export class ProductsService {
       page,
       limit,
     };
+  }
+
+  async searchAllProducts(storeSlug: string, q: string) {
+    const store = await this.storeRepo.findBySlug(storeSlug);
+    if (!store) throw new NotFoundException('Store not found slug');
+
+    const data = await this.productRepo.searchProductsAndVariants({
+      storeId: store.id,
+      q,
+      skip: 0,
+      take: 20,
+      orderBy: { field: 'createdAt', dir: 'desc' },
+    });
+
+    return data;
   }
 
   async getAllProductOptionsByProductId(productId: string) {
@@ -518,8 +533,8 @@ export class ProductsService {
         await tx.variantInventory.create({
           data: {
             variantId: variant.id,
-            quantity: variantData.inventory.quantity,
-            reserved: variantData.inventory.reserved,
+            quantity: 0,
+            reserved: 0,
             lowStockThreshold: variantData.inventory.lowStockThreshold,
           },
         });

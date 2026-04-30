@@ -1,0 +1,1 @@
+ALTER TYPE "StockOrderStatus" ADD VALUE 'CLOSED';

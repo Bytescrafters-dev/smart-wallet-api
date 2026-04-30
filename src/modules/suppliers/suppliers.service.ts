@@ -17,11 +17,15 @@ export class SupplierService {
   ) {}
 
   async getSuppliers(storeId: string, query: SuppliersQueryDto) {
+    const page = query.page || 1;
+    const limit = query.limit || 10;
+    const skip = (page - 1) * limit;
+
     const params: SuppliersListParams = {
       storeId,
       q: query.q,
-      skip: query.skip || 0,
-      take: query.take || 20,
+      skip: skip || 0,
+      take: limit || 20,
     };
     return this.supplierRepo.listAllSupplierByStoreId(params);
   }

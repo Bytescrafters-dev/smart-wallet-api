@@ -11,10 +11,19 @@ export type ProductListParams = {
   currency?: string;
 };
 
+export type ProductSearchParams = {
+  storeId: string;
+  q?: string;
+  skip?: number;
+  take?: number;
+  orderBy?: { field: 'createdAt'; dir: 'asc' | 'desc' };
+};
+
 export interface IProductRepository {
   findById(id: string): Promise<Product | null>;
   findBySlug(storeId: string, slug: string): Promise<Product | null>;
   list(params: ProductListParams): Promise<Product[]>;
+  searchProductsAndVariants(params: ProductSearchParams): Promise<Product[]>;
   count(
     params: Omit<ProductListParams, 'skip' | 'take' | 'orderBy'>,
   ): Promise<number>;

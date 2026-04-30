@@ -9,12 +9,12 @@ export class SuppliersQueryDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  @Min(0)
-  skip?: number;
+  @Min(1)
+  page?: number;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(1)
-  take?: number;
+  limit?: number;
 }

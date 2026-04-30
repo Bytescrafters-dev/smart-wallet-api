@@ -16,7 +16,9 @@ model User {
   avatar        String?
   refreshTokens        RefreshToken[]
   adminStores          AdminStore[]
-  stockOrders          StockOrder[]
+  createdStockOrders   StockOrder[]      @relation("StockOrderCreator")
+  receivedStockOrders  StockOrder[]      @relation("StockOrderReceiver")
+  rejectedStockOrders  StockOrder[]      @relation("StockOrderRejector")
   stockAdjustments     StockAdjustment[]
   initiatedStockCounts StockCount[]      @relation("StockCountInitiator")
   confirmedStockCounts StockCount[]      @relation("StockCountConfirmer")
@@ -106,6 +108,7 @@ model Store {
   products         Product[]
   carts            Cart[]
   stockOrders      StockOrder[]
+  storeSequence    StoreSequence?
   suppliers        Supplier[]
   stockAdjustments StockAdjustment[]
   stockCounts      StockCount[]
@@ -309,6 +312,7 @@ enum StockOrderStatus {
   RECEIVED
   PARTIALLY_RECEIVED
   REJECTED
+  CLOSED
 }
 
 enum StockAdjustmentReason {
@@ -397,21 +401,36 @@ model StockOrder {
   id           String           @id @default(cuid())
   storeId      String
   store        Store            @relation(fields: [storeId], references: [id])
-  receivedById String
-  receivedBy   User             @relation(fields: [receivedById], references: [id])
+  orderNumber  String
+  createdById  String
+  createdBy    User             @relation("StockOrderCreator", fields: [createdById], references: [id])
+  receivedById String?
+  receivedBy   User?            @relation("StockOrderReceiver", fields: [receivedById], references: [id])
+  rejectedById String?
+  rejectedBy   User?            @relation("StockOrderRejector", fields: [rejectedById], references: [id])
+  rejectedAt   DateTime?
   supplierId   String?
   supplier     Supplier?        @relation(fields: [supplierId], references: [id])
   invoiceRef   String?
   status       StockOrderStatus @default(CREATED)
   note         String?
+  currency     String?
   receivedAt   DateTime?
+  expectedDeliveryDate  DateTime?
   lines        StockOrderLine[]
   createdAt    DateTime         @default(now())
 
+  @@unique([storeId, orderNumber])
   @@index([storeId])
   @@index([supplierId])
   @@index([status])
   @@index([receivedAt])
+}
+
+model StoreSequence {
+  storeId       String @id
+  store         Store  @relation(fields: [storeId], references: [id])
+  stockOrderSeq Int    @default(0)
 }
 
 model StockOrderLine {

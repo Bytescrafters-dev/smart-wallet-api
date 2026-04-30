@@ -3,13 +3,13 @@ import { IsNumber, Min } from 'class-validator';
 export class VariantInventoryDto {
   @IsNumber()
   @Min(0)
-  quantity: number;
+  quantity!: number;
 
   @IsNumber()
   @Min(0)
-  reserved: number;
+  reserved!: number;
 
   @IsNumber()
   @Min(0)
-  lowStockThreshold: number;
+  lowStockThreshold!: number;
 }

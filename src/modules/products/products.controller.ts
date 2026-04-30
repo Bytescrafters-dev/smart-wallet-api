@@ -73,6 +73,14 @@ export class ProductsController {
     });
   }
 
+  @Get('store/search-all/:storeSlug')
+  searchAllProducts(
+    @Param('storeSlug') storeSlug: string,
+    @Query('search') q: string,
+  ) {
+    return this.productsService.searchAllProducts(storeSlug, q);
+  }
+
   @Get(':storeSlug/:productSlug')
   getBySlug(
     @Param('storeSlug') storeSlug: string,

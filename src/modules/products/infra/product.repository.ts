@@ -3,6 +3,7 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 import {
   IProductRepository,
   ProductListParams,
+  ProductSearchParams,
 } from '../interfaces/product.repository.interface';
 import { Product, ProductImage } from '@prisma/client';
 
@@ -84,6 +85,40 @@ export class ProductRepository implements IProductRepository {
       const minPrice = allPrices.length > 0 ? Math.min(...allPrices) : null;
       const { variants, ...productData } = product;
       return { ...productData, minPrice, currency: resolvedCurrency };
+    });
+  }
+
+  searchProductsAndVariants(params: ProductSearchParams) {
+    const { storeId, q, skip = 0, take = 20, orderBy } = params;
+
+    return this.prisma.product.findMany({
+      where: {
+        storeId,
+        ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
+      },
+      include: {
+        variants: {
+          select: {
+            id: true,
+            sku: true,
+            title: true,
+            active: true,
+            inventory: {
+              select: { quantity: true },
+            },
+          },
+        },
+        _count: {
+          select: {
+            variants: true,
+          },
+        },
+      },
+      orderBy: orderBy
+        ? { [orderBy.field]: orderBy.dir }
+        : { createdAt: 'desc' },
+      skip,
+      take,
     });
   }
 
