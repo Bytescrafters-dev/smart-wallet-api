@@ -136,6 +136,33 @@ export class InventoryService {
     tx ? await run(tx) : await this.prisma.$transaction(run);
   }
 
+  // Called when a direct stock receipt is created — adds physical stock without a PO
+  async receiptIn(
+    variantId: string,
+    qty: number,
+    receiptId: string,
+    actorId: string,
+    tx?: any,
+  ): Promise<void> {
+    const run = async (client: any) => {
+      await this.inventoryRepo.createMovement(
+        {
+          variantId,
+          type: InventoryMovementType.RECEIPT_IN,
+          delta: qty,
+          refType: InventoryMovementRefType.STOCK_RECEIPT,
+          refId: receiptId,
+          actorType: InventoryMovementActorType.ADMIN,
+          actorId,
+        },
+        client,
+      );
+      await this.inventoryRepo.incrementQuantity(variantId, qty, client);
+    };
+
+    tx ? await run(tx) : await this.prisma.$transaction(run);
+  }
+
   // Called for manual stock adjustments — delta is signed (positive adds, negative removes)
   async adjust(
     variantId: string,

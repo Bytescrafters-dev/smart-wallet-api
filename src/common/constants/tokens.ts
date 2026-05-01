@@ -13,4 +13,5 @@ export const TOKENS = {
   AddressRepo: Symbol('AddressRepository'),
   SupplierRepo: Symbol('SupplierRepository'),
   StockOrderRepo: Symbol('StockOrderRepository'),
+  StockReceiptRepo: Symbol('StockReceiptRepository'),
 };

@@ -16,12 +16,13 @@ model User {
   avatar        String?
   refreshTokens        RefreshToken[]
   adminStores          AdminStore[]
-  createdStockOrders   StockOrder[]      @relation("StockOrderCreator")
-  receivedStockOrders  StockOrder[]      @relation("StockOrderReceiver")
-  rejectedStockOrders  StockOrder[]      @relation("StockOrderRejector")
-  stockAdjustments     StockAdjustment[]
-  initiatedStockCounts StockCount[]      @relation("StockCountInitiator")
-  confirmedStockCounts StockCount[]      @relation("StockCountConfirmer")
+  createdStockOrders    StockOrder[]      @relation("StockOrderCreator")
+  receivedStockOrders   StockOrder[]      @relation("StockOrderReceiver")
+  rejectedStockOrders   StockOrder[]      @relation("StockOrderRejector")
+  createdStockReceipts  StockReceipt[]    @relation("StockReceiptCreator")
+  stockAdjustments      StockAdjustment[]
+  initiatedStockCounts  StockCount[]      @relation("StockCountInitiator")
+  confirmedStockCounts  StockCount[]      @relation("StockCountConfirmer")
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
 }
@@ -108,6 +109,7 @@ model Store {
   products         Product[]
   carts            Cart[]
   stockOrders      StockOrder[]
+  stockReceipts    StockReceipt[]
   storeSequence    StoreSequence?
   suppliers        Supplier[]
   stockAdjustments StockAdjustment[]
@@ -254,6 +256,7 @@ model ProductVariant {
   optionValues ProductVariantOptionValue[]
   inventoryMovements InventoryMovement[]
   stockOrderLines    StockOrderLine[]
+  stockReceiptLines  StockReceiptLine[]
   stockAdjustments   StockAdjustment[]
   stockCountLines    StockCountLine[]
   createdAt   DateTime @default(now())
@@ -293,6 +296,7 @@ enum InventoryMovementType {
   UNRESERVED
   SALE
   STOCK_IN
+  RECEIPT_IN
   ADJUSTMENT
 }
 
@@ -304,6 +308,7 @@ enum InventoryMovementActorType {
 enum InventoryMovementRefType {
   ORDER
   STOCK_ORDER
+  STOCK_RECEIPT
   STOCK_ADJUSTMENT
 }
 
@@ -428,9 +433,40 @@ model StockOrder {
 }
 
 model StoreSequence {
-  storeId       String @id
-  store         Store  @relation(fields: [storeId], references: [id])
-  stockOrderSeq Int    @default(0)
+  storeId          String @id
+  store            Store  @relation(fields: [storeId], references: [id])
+  stockOrderSeq    Int    @default(0)
+  stockReceiptSeq  Int    @default(0)
+}
+
+model StockReceipt {
+  id            String             @id @default(cuid())
+  storeId       String
+  store         Store              @relation(fields: [storeId], references: [id])
+  receiptNumber String
+  createdById   String
+  createdBy     User               @relation("StockReceiptCreator", fields: [createdById], references: [id])
+  invoiceRef    String?
+  note          String?
+  currency      String?
+  lines         StockReceiptLine[]
+  createdAt     DateTime           @default(now())
+
+  @@unique([storeId, receiptNumber])
+  @@index([storeId])
+}
+
+model StockReceiptLine {
+  id         String       @id @default(cuid())
+  receiptId  String
+  receipt    StockReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  variantId  String
+  variant    ProductVariant @relation(fields: [variantId], references: [id])
+  qty        Int
+  costPerUnit Int?
+
+  @@index([receiptId])
+  @@index([variantId])
 }
 
 model StockOrderLine {
