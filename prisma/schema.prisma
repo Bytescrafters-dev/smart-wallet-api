@@ -23,6 +23,7 @@ model User {
   stockAdjustments      StockAdjustment[]
   initiatedStockCounts  StockCount[]      @relation("StockCountInitiator")
   confirmedStockCounts  StockCount[]      @relation("StockCountConfirmer")
+  assignedLeads         Lead[]
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
 }
@@ -114,6 +115,7 @@ model Store {
   suppliers        Supplier[]
   stockAdjustments StockAdjustment[]
   stockCounts      StockCount[]
+  leads            Lead[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -650,4 +652,50 @@ model Address {
   updatedAt    DateTime  @updatedAt
 
   @@index([storeUserId])
+}
+
+enum LeadSource {
+  FACEBOOK
+  GOOGLE
+  INSTAGRAM
+  WHATSAPP
+  TIKTOK
+  OTHER
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  NO_ANSWER
+  INTERESTED
+  ORDERED
+  NOT_INTERESTED
+}
+
+model Lead {
+  id           String     @id @default(cuid())
+  storeId      String
+  store        Store      @relation(fields: [storeId], references: [id])
+  fullName     String
+  phone        String
+  email        String?
+  address1     String?
+  address2     String?
+  city         String?
+  state        String?
+  country      String?
+  postalCode   String?
+  source       LeadSource
+  productSKUs  String[]
+  status       LeadStatus @default(NEW)
+  note         String?
+  followUpDate DateTime?
+  assignedToId String?
+  assignedTo   User?      @relation(fields: [assignedToId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([storeId])
+  @@index([status])
+  @@index([assignedToId])
 }
