@@ -2,12 +2,15 @@ import {
   SetMetadata,
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
+import { AdminRole } from '@prisma/client';
 
-export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
+export const ROLES_KEY = 'roles';
+export const Roles = (...roles: AdminRole[]) => SetMetadata(ROLES_KEY, roles);
 export const Public = () => SetMetadata('isPublic', true);
 
 @Injectable()
@@ -30,12 +33,18 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
 @Injectable()
 export class RolesGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) {}
+
   canActivate(ctx: ExecutionContext): boolean {
-    const required = Reflect.getMetadata('roles', ctx.getHandler()) as
-      | string[]
-      | undefined;
+    const required = this.reflector.getAllAndOverride<AdminRole[]>(ROLES_KEY, [
+      ctx.getHandler(),
+      ctx.getClass(),
+    ]);
     if (!required?.length) return true;
-    const req = ctx.switchToHttp().getRequest();
-    return required.includes(req.user?.role);
+    const { user } = ctx.switchToHttp().getRequest();
+    if (!required.includes(user?.role)) {
+      throw new ForbiddenException('Insufficient role');
+    }
+    return true;
   }
 }

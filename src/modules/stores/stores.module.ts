@@ -6,12 +6,14 @@ import { StoresService } from './stores.service';
 import { StoreRepository } from './infra/store.repository';
 import { AdminStoreRepository } from './infra/admin-store.repository';
 import { PlatformJwtModule } from '../auth/jwt.module';
+import { RolesGuard } from 'src/common/auth';
 
 @Module({
   imports: [ConfigModule, PlatformJwtModule],
   controllers: [StoresController],
   providers: [
     StoresService,
+    RolesGuard,
     { provide: TOKENS.StoreRepo, useClass: StoreRepository },
     { provide: TOKENS.AdminStoreRepo, useClass: AdminStoreRepository },
   ],

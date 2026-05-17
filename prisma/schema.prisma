@@ -7,25 +7,33 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  email         String        @unique
-  passwordHash  String
-  firstName     String?
-  lastName      String?
-  phone         String?
-  avatar        String?
+  id                   String        @id @default(cuid())
+  email                String        @unique
+  passwordHash         String
+  firstName            String?
+  lastName             String?
+  phone                String?
+  avatar               String?
+  role                 AdminRole
+  mustChangePassword   Boolean       @default(false)
+  createdById          String?
+  createdBy            User?         @relation("UserCreatedBy", fields: [createdById], references: [id])
+  createdUsers         User[]        @relation("UserCreatedBy")
   refreshTokens        RefreshToken[]
   adminStores          AdminStore[]
-  createdStockOrders    StockOrder[]      @relation("StockOrderCreator")
-  receivedStockOrders   StockOrder[]      @relation("StockOrderReceiver")
-  rejectedStockOrders   StockOrder[]      @relation("StockOrderRejector")
-  createdStockReceipts  StockReceipt[]    @relation("StockReceiptCreator")
-  stockAdjustments      StockAdjustment[]
-  initiatedStockCounts  StockCount[]      @relation("StockCountInitiator")
-  confirmedStockCounts  StockCount[]      @relation("StockCountConfirmer")
-  assignedLeads         Lead[]
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
+  createdStockOrders   StockOrder[]  @relation("StockOrderCreator")
+  receivedStockOrders  StockOrder[]  @relation("StockOrderReceiver")
+  rejectedStockOrders  StockOrder[]  @relation("StockOrderRejector")
+  createdStockReceipts StockReceipt[] @relation("StockReceiptCreator")
+  stockAdjustments     StockAdjustment[]
+  initiatedStockCounts StockCount[]  @relation("StockCountInitiator")
+  confirmedStockCounts StockCount[]  @relation("StockCountConfirmer")
+  assignedLeads        Lead[]
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  @@index([role])
+  @@index([createdById])
 }
 
 model StoreUser {

@@ -1,9 +1,11 @@
-import { Body, Controller, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
+import { AdminGuard } from 'src/common/guards/admin.guard';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login.dto';
 import { RefreshDto } from './dtos/refresh.dto';
 import { SignupDto } from './dtos/signup.dto';
+import { ChangePasswordDto } from './dtos/change-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,6 +26,16 @@ export class AuthController {
   @Post('admin/logout')
   adminLogout(@Body() dto: RefreshDto) {
     return this.authService.adminRevoke(dto.refresh);
+  }
+
+  @Post('admin/change-password')
+  @UseGuards(AdminGuard)
+  changePassword(@Body() dto: ChangePasswordDto, @Req() req: any) {
+    return this.authService.changePassword(
+      req.user.sub,
+      dto.currentPassword,
+      dto.newPassword,
+    );
   }
 
   // ── Store User ─────────────────────────────────────────────────────────────

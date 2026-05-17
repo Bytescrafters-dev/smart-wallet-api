@@ -15,7 +15,7 @@ export class StoresService {
     private readonly adminStoreRepo: IAdminStoreRepository,
   ) {}
 
-  async createStore(data: CreateStoreDto): Promise<Store> {
+  async createStore(data: CreateStoreDto, ownerId: string): Promise<Store> {
     const storeData = {
       ...data,
       domain: data.domain ?? null,
@@ -23,7 +23,7 @@ export class StoresService {
       supportEmail: data.supportEmail ?? null,
       logoUrl: data.logoUrl ?? null,
     };
-    return this.storeRepo.create(storeData);
+    return this.storeRepo.createWithOwner(storeData, ownerId);
   }
 
   async getStoreById(id: string): Promise<Store | null> {

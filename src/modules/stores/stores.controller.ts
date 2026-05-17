@@ -13,15 +13,19 @@ import { AdminGuard } from 'src/common/guards/admin.guard';
 import { StoresService } from './stores.service';
 import { CreateStoreDto } from './dtos/create-store.dto';
 import { UpdateStoreDto } from './dtos/update-store.dto';
+import { Roles, RolesGuard } from 'src/common/auth';
+import { AdminRole } from '@prisma/client';
 
 @Controller('stores')
 @UseGuards(AdminGuard)
 export class StoresController {
   constructor(private readonly storesService: StoresService) {}
 
+  @UseGuards(RolesGuard)
+  @Roles(AdminRole.OWNER)
   @Post()
-  createStore(@Body() data: CreateStoreDto) {
-    return this.storesService.createStore(data);
+  createStore(@Body() data: CreateStoreDto, @Req() req: any) {
+    return this.storesService.createStore(data, req.user.sub);
   }
 
   @Get()

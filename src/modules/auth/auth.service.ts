@@ -43,19 +43,21 @@ export class AuthService {
     if (!ok) throw new UnauthorizedException();
 
     const stores = await this.storeRepo.findByAdminUserId(user.id);
+    const tokens = await this.issueAdminTokens(user.id, user.role, stores);
 
-    return this.issueAdminTokens(user.id, stores);
+    return { ...tokens, mustChangePassword: user.mustChangePassword };
   }
 
   private async issueAdminTokens(
     userId: string,
+    role: string,
     stores: { id: string; name: string; slug: string }[],
   ) {
     const jti = randomUUID();
     await this.refreshTokenRepo.create({ userId, tokenId: jti });
 
     const access = await this.jwt.signAsync(
-      { sub: userId, type: 'admin', stores },
+      { sub: userId, type: 'admin', role, stores },
       {
         secret: process.env.JWT_SECRET!,
         expiresIn: process.env.JWT_EXPIRES || '15m',
@@ -84,7 +86,25 @@ export class AuthService {
     if (!user) throw new UnauthorizedException();
 
     const stores = await this.storeRepo.findByAdminUserId(user.id);
-    return this.issueAdminTokens(user.id, stores);
+    return this.issueAdminTokens(user.id, user.role, stores);
+  }
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    const user = await this.userRepo.findById(userId);
+    if (!user) throw new UnauthorizedException();
+
+    const ok = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!ok) throw new UnauthorizedException('Current password is incorrect');
+
+    const newHash = await bcrypt.hash(newPassword, 12);
+    await this.userRepo.updatePassword(userId, newHash);
+
+    const stores = await this.storeRepo.findByAdminUserId(userId);
+    return this.issueAdminTokens(userId, user.role, stores);
   }
 
   async adminRevoke(refreshToken: string) {

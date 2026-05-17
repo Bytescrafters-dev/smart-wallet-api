@@ -11,6 +11,19 @@ export class StoreRepository implements IStoreRepository {
     return this.prisma.store.create({ data });
   }
 
+  async createWithOwner(
+    data: Omit<Store, 'id' | 'createdAt' | 'updatedAt'>,
+    ownerId: string,
+  ): Promise<Store> {
+    return this.prisma.$transaction(async (tx) => {
+      const store = await tx.store.create({ data });
+      await tx.adminStore.create({
+        data: { userId: ownerId, storeId: store.id, role: 'OWNER' },
+      });
+      return store;
+    });
+  }
+
   async findById(id: string): Promise<Store | null> {
     return this.prisma.store.findUnique({ where: { id } });
   }

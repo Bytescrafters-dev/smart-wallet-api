@@ -2,6 +2,7 @@ import { Store, ShippingProfile } from '@prisma/client';
 
 export interface IStoreRepository {
   create(data: Omit<Store, 'id' | 'createdAt' | 'updatedAt'>): Promise<Store>;
+  createWithOwner(data: Omit<Store, 'id' | 'createdAt' | 'updatedAt'>, ownerId: string): Promise<Store>;
   findById(id: string): Promise<Store | null>;
   findBySlug(slug: string): Promise<Store | null>;
   findAll(): Promise<Store[]>;

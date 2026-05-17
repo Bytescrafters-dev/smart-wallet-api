@@ -32,6 +32,9 @@ async function main() {
     create: {
       email: 'info.bytecrafters@gmail.com',
       passwordHash: adminHash,
+      role: 'OWNER',
+      mustChangePassword: false,
+      firstName: 'Admin',
     },
   });
   await prisma.adminStore.upsert({
