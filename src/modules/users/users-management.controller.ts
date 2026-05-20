@@ -36,7 +36,6 @@ export class UsersManagementController {
   }
 
   @Get('/stores')
-  @Roles(AdminRole.OWNER, AdminRole.MANAGER)
   listUsersAllStores(
     @Req() req: any,
     @Query('q') q?: string,
@@ -57,9 +56,13 @@ export class UsersManagementController {
   }
 
   @Patch('/:id')
-  @Roles(AdminRole.OWNER)
-  update(@Param('id') id: string, @Body() dto: UpdateAdminUserDto) {
-    return this.userService.updateUser(id, dto);
+  @Roles(AdminRole.OWNER, AdminRole.MANAGER)
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateAdminUserDto,
+    @Req() req: any,
+  ) {
+    return this.userService.updateUser(id, dto, req.user.role);
   }
 
   @Post('/:id/stores')
@@ -83,8 +86,8 @@ export class UsersManagementController {
   }
 
   @Delete('/:id')
-  @Roles(AdminRole.OWNER)
-  remove(@Param('id') id: string, @Req() req: any) {
-    return this.userService.removeUser(id, req.user.sub);
+  @Roles(AdminRole.OWNER, AdminRole.MANAGER)
+  deactivate(@Param('id') id: string, @Req() req: any) {
+    return this.userService.deactivateUser(id, req.user.sub, req.user.role);
   }
 }

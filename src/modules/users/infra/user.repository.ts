@@ -14,6 +14,7 @@ const USER_PUBLIC_SELECT = {
   phone: true,
   avatar: true,
   role: true,
+  status: true,
   mustChangePassword: true,
   createdAt: true,
   updatedAt: true,
@@ -71,7 +72,7 @@ export class UserRepository implements IUserRepository {
 
   findByStore(storeId: string): Promise<any[]> {
     return this.prisma.user.findMany({
-      where: { adminStores: { some: { storeId } } },
+      where: { status: 'ACTIVE', adminStores: { some: { storeId } } },
       select: {
         ...USER_PUBLIC_SELECT,
         adminStores: {
@@ -91,6 +92,7 @@ export class UserRepository implements IUserRepository {
     const { storeIds, q, page = 1, limit = 20 } = params;
 
     const where: any = {
+      status: 'ACTIVE',
       adminStores: { some: { storeId: { in: storeIds } } },
     };
 
@@ -144,7 +146,12 @@ export class UserRepository implements IUserRepository {
 
   async updateUser(
     id: string,
-    data: { firstName?: string; lastName?: string; phone?: string },
+    data: {
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      role?: AdminRole;
+    },
   ): Promise<any> {
     return this.prisma.user.update({
       where: { id },
@@ -153,11 +160,13 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  async deleteUser(id: string): Promise<void> {
+  async deactivateUser(id: string): Promise<void> {
     await this.prisma.$transaction([
-      this.prisma.adminStore.deleteMany({ where: { userId: id } }),
+      this.prisma.user.update({
+        where: { id },
+        data: { status: 'INACTIVE' },
+      }),
       this.prisma.refreshToken.deleteMany({ where: { userId: id } }),
-      this.prisma.user.delete({ where: { id } }),
     ]);
   }
 

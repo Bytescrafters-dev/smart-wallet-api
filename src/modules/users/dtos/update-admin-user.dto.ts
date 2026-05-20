@@ -1,4 +1,5 @@
-import { IsOptional, IsString } from 'class-validator';
+import { AdminRole } from '@prisma/client';
+import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
 
 export class UpdateAdminUserDto {
   @IsOptional()
@@ -12,4 +13,9 @@ export class UpdateAdminUserDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @IsOptional()
+  @IsEnum(AdminRole)
+  @IsIn([AdminRole.MANAGER, AdminRole.VIEWER])
+  role?: AdminRole;
 }

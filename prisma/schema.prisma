@@ -15,6 +15,7 @@ model User {
   phone                String?
   avatar               String?
   role                 AdminRole
+  status               UserStatus    @default(ACTIVE)
   mustChangePassword   Boolean       @default(false)
   createdById          String?
   createdBy            User?         @relation("UserCreatedBy", fields: [createdById], references: [id])
@@ -33,6 +34,7 @@ model User {
   updatedAt            DateTime      @updatedAt
 
   @@index([role])
+  @@index([status])
   @@index([createdById])
 }
 

@@ -36,9 +36,14 @@ export interface IUserRepository {
   findUserWithStores(id: string): Promise<any | null>;
   updateUser(
     id: string,
-    data: { firstName?: string; lastName?: string; phone?: string },
+    data: {
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      role?: AdminRole;
+    },
   ): Promise<any>;
-  deleteUser(id: string): Promise<void>;
+  deactivateUser(id: string): Promise<void>;
   removeStoreAccess(userId: string, storeId: string): Promise<void>;
   updatePassword(id: string, passwordHash: string): Promise<void>;
 }

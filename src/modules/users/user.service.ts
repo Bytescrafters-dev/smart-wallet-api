@@ -112,9 +112,19 @@ export class UserService {
     return user;
   }
 
-  async updateUser(id: string, dto: UpdateAdminUserDto) {
+  async updateUser(id: string, dto: UpdateAdminUserDto, callerRole: AdminRole) {
     const user = await this.userRepo.findById(id);
     if (!user) throw new NotFoundException('User not found');
+
+    if (user.role === AdminRole.OWNER)
+      throw new ForbiddenException('You cannot update owner profiles');
+
+    if (user.role === AdminRole.MANAGER && callerRole !== AdminRole.OWNER)
+      throw new ForbiddenException('You cannot update manager profiles');
+
+    if (callerRole === AdminRole.MANAGER && dto.role !== AdminRole.VIEWER)
+      throw new ForbiddenException('Managers can only update Viewer accounts');
+
     return this.userRepo.updateUser(id, dto);
   }
 
@@ -153,13 +163,19 @@ export class UserService {
     return { message: 'Store access removed' };
   }
 
-  async removeUser(id: string, callerId: string) {
+  async deactivateUser(id: string, callerId: string, callerRole: AdminRole) {
     if (id === callerId) {
-      throw new ForbiddenException('You cannot delete your own account');
+      throw new ForbiddenException('You cannot deactivate your own account');
     }
     const user = await this.userRepo.findById(id);
     if (!user) throw new NotFoundException('User not found');
-    await this.userRepo.deleteUser(id);
-    return { message: 'User deleted' };
+
+    if (callerRole === AdminRole.MANAGER && user.role !== AdminRole.VIEWER)
+      throw new ForbiddenException(
+        'Managers can only deactivate staff accounts',
+      );
+
+    await this.userRepo.deactivateUser(id);
+    return { message: 'User deactivated' };
   }
 }

@@ -37,7 +37,7 @@ export class AuthService {
 
   async adminLogin(email: string, password: string) {
     const user = await this.userRepo.findByEmail(email);
-    if (!user) throw new UnauthorizedException();
+    if (!user || user.status === 'INACTIVE') throw new UnauthorizedException();
 
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) throw new UnauthorizedException();
