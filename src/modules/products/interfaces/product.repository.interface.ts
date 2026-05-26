@@ -17,6 +17,7 @@ export type ProductSearchParams = {
   skip?: number;
   take?: number;
   orderBy?: { field: 'createdAt'; dir: 'asc' | 'desc' };
+  currency?: string;
 };
 
 export interface IProductRepository {

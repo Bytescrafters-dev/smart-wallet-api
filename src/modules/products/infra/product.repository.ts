@@ -89,7 +89,8 @@ export class ProductRepository implements IProductRepository {
   }
 
   searchProductsAndVariants(params: ProductSearchParams) {
-    const { storeId, q, skip = 0, take = 20, orderBy } = params;
+    const { storeId, q, skip = 0, take = 20, orderBy, currency } = params;
+    const now = new Date();
 
     return this.prisma.product.findMany({
       where: {
@@ -105,6 +106,16 @@ export class ProductRepository implements IProductRepository {
             active: true,
             inventory: {
               select: { quantity: true },
+            },
+            prices: {
+              where: {
+                validFrom: { lte: now },
+                OR: [{ validTo: null }, { validTo: { gt: now } }],
+                ...(currency ? { currency } : {}),
+              },
+              orderBy: { validFrom: 'desc' },
+              take: 1,
+              select: { amount: true, currency: true },
             },
           },
         },

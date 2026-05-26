@@ -30,6 +30,8 @@ model User {
   initiatedStockCounts StockCount[]  @relation("StockCountInitiator")
   confirmedStockCounts StockCount[]  @relation("StockCountConfirmer")
   assignedLeads        Lead[]
+  createdOrders        Order[]       @relation("OrderCreator")
+  confirmedOrders      Order[]       @relation("OrderConfirmer")
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
 
@@ -447,6 +449,7 @@ model StockOrder {
 model StoreSequence {
   storeId          String @id
   store            Store  @relation(fields: [storeId], references: [id])
+  orderSeq         Int    @default(0)
   stockOrderSeq    Int    @default(0)
   stockReceiptSeq  Int    @default(0)
 }
@@ -599,30 +602,47 @@ model CartItem {
   unitPrice Int
 }
 
-enum OrderStatus { 
-    PENDING 
-    PAID 
-    CANCELED 
-    FULFILLED 
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+enum PaymentStatus {
+  UNPAID
+  COD
+  PAID
+  REFUNDED
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  storeId     String
-  store       Store       @relation(fields: [storeId], references: [id])
-  storeUserId String?
-  storeUser   StoreUser?  @relation(fields: [storeUserId], references: [id])
-  status      OrderStatus @default(PENDING)
-  currency   String
-  subtotal   Int
-  shipping   Int @default(0)
-  discount   Int @default(0)
-  tax        Int @default(0)
-  total      Int
+  id            String        @id @default(cuid())
+  storeId       String
+  store         Store         @relation(fields: [storeId], references: [id])
+  orderNumber   String
+  storeUserId   String?
+  storeUser     StoreUser?    @relation(fields: [storeUserId], references: [id])
+  createdById   String?
+  createdBy     User?         @relation("OrderCreator", fields: [createdById], references: [id])
+  confirmedById String?
+  confirmedBy   User?         @relation("OrderConfirmer", fields: [confirmedById], references: [id])
+  status        OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(UNPAID)
+  currency      String
+  subtotal      Int
+  shipping      Int           @default(0)
+  discount      Int           @default(0)
+  tax           Int           @default(0)
+  total         Int
   shippingOptionId String?
   shippingOption   ShippingOption? @relation(fields: [shippingOptionId], references: [id])
-  paymentId  String?
-  items      OrderItem[]
+  paymentId        String?
+  note             String?
+  customerName     String?
+  customerPhone    String?
+  items            OrderItem[]
   shippingAddress1   String?
   shippingAddress2   String?
   shippingCity       String?
@@ -631,19 +651,26 @@ model Order {
   shippingCountry    String?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+
+  @@unique([storeId, orderNumber])
+  @@index([storeId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([storeUserId])
 }
 
 model OrderItem {
-  id        String   @id @default(cuid())
-  orderId   String
-  order     Order    @relation(fields: [orderId], references: [id])
-  productId String
-  variantId String
-  sku       String
-  title     String
-  unitPrice Int
-  quantity  Int
-  options   Json?
+  id           String   @id @default(cuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id])
+  productId    String
+  variantId    String
+  sku          String
+  productTitle String
+  variantTitle String?
+  unitPrice    Int
+  quantity     Int
+  options      Json?
 }
 
 model Address {

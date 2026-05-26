@@ -7,12 +7,16 @@ import {
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { TOKENS } from 'src/common/constants/tokens';
 import { IInventoryRepository } from './interfaces/inventory.repository.interface';
+import { IProductRepository } from '../products/interfaces/product.repository.interface';
 
 @Injectable()
 export class InventoryService {
   constructor(
     @Inject(TOKENS.InventoryRepo)
     private readonly inventoryRepo: IInventoryRepository,
+    @Inject(TOKENS.ProductRepo)
+    private readonly productRepo: IProductRepository,
+
     private readonly prisma: PrismaService,
   ) {}
 
@@ -30,8 +34,9 @@ export class InventoryService {
         client,
       );
       if (!inventory || inventory.quantity - inventory.reserved < qty) {
+        const variant = await this.productRepo.findVariantById(variantId);
         throw new BadRequestException(
-          `Insufficient stock for variant ${variantId}`,
+          `Insufficient stock for variant ${variant.sku}`,
         );
       }
       await this.inventoryRepo.createMovement(
@@ -41,7 +46,9 @@ export class InventoryService {
           delta: qty,
           refType: InventoryMovementRefType.ORDER,
           refId: orderId,
-          actorType: InventoryMovementActorType.SYSTEM,
+          actorType: actorId
+            ? InventoryMovementActorType.ADMIN
+            : InventoryMovementActorType.SYSTEM,
           actorId,
         },
         client,
