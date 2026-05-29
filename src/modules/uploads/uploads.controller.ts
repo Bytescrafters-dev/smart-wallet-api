@@ -21,6 +21,8 @@ import { StoreUserGuard } from 'src/common/guards/store-user.guard';
 import { UploadProductImageDto } from './dtos/upload-product-image.dto';
 import { TOKENS } from 'src/common/constants/tokens';
 import { IStoreUserRepository } from '../store-users/interfaces/store-user.repository.interface';
+import { SuperAdminAuthService } from '../super-admin/super-admin-auth.service';
+import { SuperAdminGuard } from 'src/common/guards/super-admin.guard';
 
 const AVATAR_PIPE = new ParseFilePipe({
   validators: [
@@ -35,9 +37,29 @@ export class UploadsController {
     private readonly uploadService: UploadsService,
     private readonly userService: UserService,
     private readonly productsService: ProductsService,
+    private readonly superAdminService: SuperAdminAuthService,
     @Inject(TOKENS.StoreUserRepo)
     private readonly storeUserRepo: IStoreUserRepository,
   ) {}
+
+  // ── Super admin avatar ───────────────────────────────────────────────────────────
+
+  @Post('super-admin/uploads/avatar')
+  @UseGuards(SuperAdminGuard)
+  @UseInterceptors(FileInterceptor('avatar'))
+  async uploadSuperAdminAvatar(
+    @Req() req: any,
+    @UploadedFile(AVATAR_PIPE) file: Express.Multer.File,
+  ) {
+    const userId: string = req.user.sub;
+    const { url } = await this.uploadService.uploadAvatar(
+      file.originalname,
+      file.buffer,
+      `super-admins/${userId}`,
+    );
+    await this.superAdminService.updateAvatar(userId, url);
+    return { avatarUrl: url };
+  }
 
   // ── Admin avatar ───────────────────────────────────────────────────────────
 

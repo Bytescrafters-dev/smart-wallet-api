@@ -106,6 +106,45 @@ model StoreUserRefreshToken {
   createdAt   DateTime  @default(now())
 }
 
+enum SuperAdminRole {
+  OWNER
+  PARTNER
+  MANAGER
+  STAFF
+}
+
+model SuperAdmin {
+  id                 String                   @id @default(cuid())
+  email              String                   @unique
+  passwordHash       String
+  firstName          String
+  lastName           String
+  phone              String?
+  avatar             String?
+  role               SuperAdminRole           @default(STAFF)
+  mustChangePassword Boolean                  @default(true)
+  status             UserStatus               @default(ACTIVE)
+  createdById        String?
+  createdBy          SuperAdmin?              @relation("SuperAdminCreator", fields: [createdById], references: [id])
+  createdAdmins      SuperAdmin[]             @relation("SuperAdminCreator")
+  refreshTokens      SuperAdminRefreshToken[]
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+
+  @@index([role])
+  @@index([status])
+  @@index([createdById])
+}
+
+model SuperAdminRefreshToken {
+  id           String     @id @default(cuid())
+  superAdminId String
+  superAdmin   SuperAdmin @relation(fields: [superAdminId], references: [id])
+  tokenId      String     @unique
+  revokedAt    DateTime?
+  createdAt    DateTime   @default(now())
+}
+
 model Store {
   id              String   @id @default(cuid())
   name            String

@@ -16,4 +16,6 @@ export const TOKENS = {
   StockReceiptRepo: Symbol('StockReceiptRepository'),
   LeadRepo: Symbol('LeadRepository'),
   OrderRepo: Symbol('OrderRepository'),
+  SuperAdminRepo: Symbol('SuperAdminRepository'),
+  SuperAdminRefreshTokenRepo: Symbol('SuperAdminRefreshTokenRepository'),
 };
