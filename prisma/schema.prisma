@@ -32,12 +32,15 @@ model User {
   assignedLeads        Lead[]
   createdOrders        Order[]       @relation("OrderCreator")
   confirmedOrders      Order[]       @relation("OrderConfirmer")
+  tenantId             String?
+  tenant               Tenant?       @relation(fields: [tenantId], references: [id])
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
 
   @@index([role])
   @@index([status])
   @@index([createdById])
+  @@index([tenantId])
 }
 
 model StoreUser {
@@ -128,6 +131,7 @@ model SuperAdmin {
   createdBy          SuperAdmin?              @relation("SuperAdminCreator", fields: [createdById], references: [id])
   createdAdmins      SuperAdmin[]             @relation("SuperAdminCreator")
   refreshTokens      SuperAdminRefreshToken[]
+  createdTenants     Tenant[]
   createdAt          DateTime                 @default(now())
   updatedAt          DateTime                 @updatedAt
 
@@ -143,6 +147,42 @@ model SuperAdminRefreshToken {
   tokenId      String     @unique
   revokedAt    DateTime?
   createdAt    DateTime   @default(now())
+}
+
+enum TenantPlan {
+  TRIAL
+  BASIC
+  PLUS
+  ENTERPRISE
+}
+
+enum TenantStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  CANCELED
+}
+
+model Tenant {
+  id           String       @id @default(cuid())
+  companyName  String?
+  firstName    String
+  lastName     String
+  phone        String?
+  email        String       @unique
+  plan         TenantPlan   @default(TRIAL)
+  status       TenantStatus @default(PENDING)
+  trialEndsAt  DateTime?
+  notes        String?
+  createdById  String?
+  createdBy    SuperAdmin?  @relation(fields: [createdById], references: [id])
+  users        User[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([status])
+  @@index([plan])
+  @@index([createdById])
 }
 
 model Store {

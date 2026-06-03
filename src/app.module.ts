@@ -15,6 +15,7 @@ import { StockOrdersModule } from './modules/stock-orders/stock-orders.module';
 import { StockReceiptsModule } from './modules/stock-receipts/stock-receipts.module';
 import { LeadsModule } from './modules/leads/leads.module';
 import { SuperAdminModule } from './modules/super-admin/super-admin.module';
+import { TenantsModule } from './modules/tenants/tenants.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SuperAdminModule } from './modules/super-admin/super-admin.module';
     StockReceiptsModule,
     LeadsModule,
     SuperAdminModule,
+    TenantsModule,
   ],
 })
 export class AppModule {}
