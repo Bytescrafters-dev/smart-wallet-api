@@ -10,9 +10,10 @@ import { UsersModule } from '../users/user.module';
 import { OrdersModule } from '../orders/orders.module';
 import { StoresModule } from '../stores/stores.module';
 import { StoreUsersModule } from '../store-users/store-users.module';
+import { TenantsModule } from '../tenants/tenants.module';
 
 @Module({
-  imports: [ConfigModule, PlatformJwtModule, UsersModule, OrdersModule, StoresModule, StoreUsersModule],
+  imports: [ConfigModule, PlatformJwtModule, UsersModule, OrdersModule, StoresModule, StoreUsersModule, TenantsModule],
   controllers: [AuthController],
   providers: [
     AuthService,

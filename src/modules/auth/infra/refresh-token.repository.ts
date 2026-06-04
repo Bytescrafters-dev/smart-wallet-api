@@ -29,4 +29,11 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
     });
     return token;
   }
+
+  async revokeAllByTenantId(tenantId: string): Promise<void> {
+    await this.prisma.refreshToken.updateMany({
+      where: { user: { tenantId }, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+  }
 }

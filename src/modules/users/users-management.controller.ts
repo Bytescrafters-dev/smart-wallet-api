@@ -26,7 +26,7 @@ export class UsersManagementController {
   @Post()
   @Roles(AdminRole.OWNER, AdminRole.MANAGER)
   create(@Body() dto: CreateAdminUserDto, @Req() req: any) {
-    return this.userService.createUser(dto, req.user.sub, req.user.role);
+    return this.userService.createUser(dto, req.user.sub, req.user.role, req.user.tenantId);
   }
 
   @Get('/store/:storeId')

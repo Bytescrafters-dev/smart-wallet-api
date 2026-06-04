@@ -8,7 +8,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
+import { TenantStatus } from '@prisma/client';
 import { TOKENS } from 'src/common/constants/tokens';
+import { ITenantRepository } from '../tenants/interfaces/tenant.repository.interface';
 import { IUserRepository } from '../users/interfaces/user.repository.interface';
 import { IRefreshTokenRepository } from './interfaces/refresh-token.repository.interface';
 import { IStoreUserRepository } from '../store-users/interfaces/store-user.repository.interface';
@@ -31,6 +33,8 @@ export class AuthService {
     private readonly storeRepo: IStoreRepository,
     private readonly jwt: JwtService,
     private readonly cartService: CartService,
+    @Inject(TOKENS.TenantRepo)
+    private readonly tenantRepo: ITenantRepository,
   ) {}
 
   // ── Admin ──────────────────────────────────────────────────────────────────
@@ -42,8 +46,15 @@ export class AuthService {
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) throw new UnauthorizedException();
 
+    await this.assertTenantActive(user.tenantId);
+
     const stores = await this.storeRepo.findByAdminUserId(user.id);
-    const tokens = await this.issueAdminTokens(user.id, user.role, stores);
+    const tokens = await this.issueAdminTokens(
+      user.id,
+      user.role,
+      stores,
+      user.tenantId,
+    );
 
     return { ...tokens, mustChangePassword: user.mustChangePassword };
   }
@@ -52,12 +63,13 @@ export class AuthService {
     userId: string,
     role: string,
     stores: { id: string; name: string; slug: string }[],
+    tenantId: string | null,
   ) {
     const jti = randomUUID();
     await this.refreshTokenRepo.create({ userId, tokenId: jti });
 
     const access = await this.jwt.signAsync(
-      { sub: userId, type: 'admin', role, stores },
+      { sub: userId, type: 'admin', role, stores, tenantId },
       {
         secret: process.env.JWT_SECRET!,
         expiresIn: process.env.JWT_EXPIRES || '15m',
@@ -85,8 +97,10 @@ export class AuthService {
     const user = await this.userRepo.findById(payload.sub);
     if (!user) throw new UnauthorizedException();
 
+    await this.assertTenantActive(user.tenantId);
+
     const stores = await this.storeRepo.findByAdminUserId(user.id);
-    return this.issueAdminTokens(user.id, user.role, stores);
+    return this.issueAdminTokens(user.id, user.role, stores, user.tenantId);
   }
 
   async changePassword(
@@ -104,7 +118,17 @@ export class AuthService {
     await this.userRepo.updatePassword(userId, newHash);
 
     const stores = await this.storeRepo.findByAdminUserId(userId);
-    return this.issueAdminTokens(userId, user.role, stores);
+    return this.issueAdminTokens(userId, user.role, stores, user.tenantId);
+  }
+
+  private async assertTenantActive(tenantId: string | null): Promise<void> {
+    if (!tenantId) return;
+    const tenant = await this.tenantRepo.findStatusById(tenantId);
+    if (!tenant || tenant.status !== TenantStatus.ACTIVE) {
+      throw new UnauthorizedException(
+        'Your account is currently inactive. Please contact your administrator for assistance.',
+      );
+    }
   }
 
   async adminRevoke(refreshToken: string) {

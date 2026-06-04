@@ -36,6 +36,7 @@ export interface ITenantRepository {
   create(data: CreateTenantData, tx?: any): Promise<Tenant>;
   findById(id: string): Promise<any | null>;
   findByEmail(email: string): Promise<Tenant | null>;
+  findStatusById(id: string): Promise<{ status: TenantStatus } | null>;
   list(params: ListTenantsParams): Promise<any[]>;
   count(params: Omit<ListTenantsParams, 'skip' | 'take'>): Promise<number>;
   update(id: string, data: UpdateTenantData): Promise<any>;

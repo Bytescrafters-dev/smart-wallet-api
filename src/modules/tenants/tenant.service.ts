@@ -6,10 +6,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { TenantPlan } from '@prisma/client';
+import { TenantPlan, TenantStatus } from '@prisma/client';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { TOKENS } from 'src/common/constants/tokens';
 import { ITenantRepository } from './interfaces/tenant.repository.interface';
+import { IRefreshTokenRepository } from '../auth/interfaces/refresh-token.repository.interface';
 import { CreateTenantDto } from './dtos/create-tenant.dto';
 import { UpdateTenantDto } from './dtos/update-tenant.dto';
 import { ListTenantsQueryDto } from './dtos/list-tenants-query.dto';
@@ -19,6 +20,8 @@ export class TenantService {
   constructor(
     @Inject(TOKENS.TenantRepo)
     private readonly tenantRepo: ITenantRepository,
+    @Inject(TOKENS.RefreshTokenRepo)
+    private readonly refreshTokenRepo: IRefreshTokenRepository,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -134,6 +137,18 @@ export class TenantService {
       updateData.trialEndsAt = new Date(dto.trialEndsAt);
     }
 
-    return this.tenantRepo.update(id, updateData);
+    const updated = await this.tenantRepo.update(id, updateData);
+
+    const isBeingDeactivated =
+      dto.status !== undefined &&
+      dto.status !== tenant.status &&
+      (dto.status === TenantStatus.SUSPENDED ||
+        dto.status === TenantStatus.CANCELED);
+
+    if (isBeingDeactivated) {
+      await this.refreshTokenRepo.revokeAllByTenantId(id);
+    }
+
+    return updated;
   }
 }

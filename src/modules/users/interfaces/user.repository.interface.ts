@@ -9,6 +9,7 @@ export interface CreateUserData {
   role: AdminRole;
   mustChangePassword: boolean;
   createdById: string;
+  tenantId?: string | null;
 }
 
 export interface IUserRepository {

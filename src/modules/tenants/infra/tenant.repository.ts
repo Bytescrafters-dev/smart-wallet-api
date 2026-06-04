@@ -50,6 +50,13 @@ export class TenantRepository implements ITenantRepository {
     return this.prisma.tenant.findUnique({ where: { email } });
   }
 
+  findStatusById(id: string): Promise<{ status: any } | null> {
+    return this.prisma.tenant.findUnique({
+      where: { id },
+      select: { status: true },
+    });
+  }
+
   list(params: ListTenantsParams): Promise<any[]> {
     const { status, plan, q, skip, take } = params;
 

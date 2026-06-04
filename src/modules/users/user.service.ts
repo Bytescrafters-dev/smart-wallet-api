@@ -44,6 +44,7 @@ export class UserService {
     dto: CreateAdminUserDto,
     callerId: string,
     callerRole: AdminRole,
+    tenantId?: string | null,
   ) {
     if (callerRole === AdminRole.MANAGER && dto.role !== AdminRole.VIEWER) {
       throw new ForbiddenException('Managers can only create Viewer accounts');
@@ -72,6 +73,7 @@ export class UserService {
       role: dto.role,
       mustChangePassword: true,
       createdById: callerId,
+      tenantId: tenantId ?? null,
     });
 
     await this.userRepo.createAdminStores(user.id, dto.storeIds, dto.role);

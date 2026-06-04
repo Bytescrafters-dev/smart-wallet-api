@@ -6,4 +6,5 @@ export interface IRefreshTokenRepository {
   ): Promise<RefreshToken | null>;
   revoke(tokenId: string): Promise<RefreshToken | null>;
   findByTokenId(tokenId: string): Promise<RefreshToken | null>;
+  revokeAllByTenantId(tenantId: string): Promise<void>;
 }
