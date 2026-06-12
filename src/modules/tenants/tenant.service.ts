@@ -147,7 +147,9 @@ export class TenantService {
     }
 
     if (dto.trialEndsAt !== undefined) {
-      updateData.trialEndsAt = dto.trialEndsAt ? new Date(dto.trialEndsAt) : null;
+      updateData.trialEndsAt = dto.trialEndsAt
+        ? new Date(dto.trialEndsAt)
+        : null;
     }
 
     const updated = await this.tenantRepo.update(id, updateData);

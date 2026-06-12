@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bullmq';
 import { TOKENS } from 'src/common/constants/tokens';
 import { QUEUES } from 'src/common/queues/queues.constants';
@@ -19,7 +18,6 @@ import { BillingProcessor } from './workers/billing.processor';
 @Module({
   imports: [
     PlatformJwtModule,
-    ScheduleModule.forRoot(),
     BullModule.registerQueue({ name: QUEUES.BILLING }),
   ],
   controllers: [PlanPriceController, SubscriptionController, InvoiceController],

@@ -19,8 +19,8 @@ export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
   @Post('activate')
-  activate(@Param('id') tenantId: string, @Req() req: any) {
-    return this.subscriptionService.activate(tenantId, req.user.sub);
+  activate(@Param('id') tenantId: string) {
+    return this.subscriptionService.activate(tenantId);
   }
 
   @Get('current')

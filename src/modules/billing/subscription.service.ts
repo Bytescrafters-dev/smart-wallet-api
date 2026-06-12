@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
   NotFoundException,
@@ -24,7 +25,7 @@ export class SubscriptionService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async activate(tenantId: string, superAdminId: string) {
+  async activate(tenantId: string) {
     const current = await this.subscriptionRepo.findCurrent(tenantId);
     if (!current) throw new NotFoundException('No active subscription found');
     if (current.status !== SubscriptionStatus.TRIAL) {
@@ -39,15 +40,15 @@ export class SubscriptionService {
     const dueDate = calcDueDate(periodEnd, current.daysUntilDue);
 
     return this.prisma.$transaction(async (tx) => {
-      const subscription = await this.subscriptionRepo.update(
-        current.id,
-        {
+      const { count } = await tx.tenantSubscription.updateMany({
+        where: { id: current.id, status: SubscriptionStatus.TRIAL },
+        data: {
           status: SubscriptionStatus.ACTIVE,
           currentPeriodStart: now,
           currentPeriodEnd: periodEnd,
         },
-        tx,
-      );
+      });
+      if (count === 0) throw new ConflictException('Subscription has already been activated');
 
       await tx.tenant.update({
         where: { id: tenantId },
@@ -69,7 +70,7 @@ export class SubscriptionService {
         },
       });
 
-      return subscription;
+      return tx.tenantSubscription.findUnique({ where: { id: current.id } });
     });
   }
 
