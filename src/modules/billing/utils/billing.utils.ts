@@ -1,4 +1,4 @@
-import { BillingCycle } from '@prisma/client';
+import { BillingCycle, Prisma } from '@prisma/client';
 
 export function addBillingCycle(date: Date, cycle: BillingCycle): Date {
   const d = new Date(date);
@@ -25,6 +25,16 @@ export function calcDueDate(periodEnd: Date, daysUntilDue: number): Date {
   return d;
 }
 
-export function generateInvoiceNumber(count: number): string {
-  return `INV-${String(count + 1).padStart(6, '0')}`;
+// Atomically increments the global invoice sequence and returns the formatted
+// invoice number. Must be called inside a Prisma transaction.
+export async function nextInvoiceNumber(
+  tx: Prisma.TransactionClient,
+): Promise<string> {
+  const seq = await tx.billingSequence.upsert({
+    where: { id: 1 },
+    create: { id: 1, invoiceSeq: 1 },
+    update: { invoiceSeq: { increment: 1 } },
+    select: { invoiceSeq: true },
+  });
+  return `INV-${String(seq.invoiceSeq).padStart(6, '0')}`;
 }

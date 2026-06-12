@@ -1,10 +1,13 @@
 /// <reference types="multer" />
 import {
+  BadRequestException,
   Body,
   Controller,
   FileTypeValidator,
   Inject,
   MaxFileSizeValidator,
+  NotFoundException,
+  Param,
   ParseFilePipe,
   Post,
   Req,
@@ -13,16 +16,20 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { ProductImageStatus } from '@prisma/client';
 import { UploadsService } from './uploads.service';
 import { UserService } from '../users/user.service';
 import { ProductsService } from '../products/products.service';
 import { AdminGuard } from 'src/common/guards/admin.guard';
 import { StoreUserGuard } from 'src/common/guards/store-user.guard';
-import { UploadProductImageDto } from './dtos/upload-product-image.dto';
+import { PresignProductImageDto } from './dtos/presign-product-image.dto';
 import { TOKENS } from 'src/common/constants/tokens';
 import { IStoreUserRepository } from '../store-users/interfaces/store-user.repository.interface';
 import { SuperAdminAuthService } from '../super-admin/super-admin-auth.service';
 import { SuperAdminGuard } from 'src/common/guards/super-admin.guard';
+import { JOBS, QUEUES } from 'src/common/queues/queues.constants';
 
 const AVATAR_PIPE = new ParseFilePipe({
   validators: [
@@ -40,6 +47,8 @@ export class UploadsController {
     private readonly superAdminService: SuperAdminAuthService,
     @Inject(TOKENS.StoreUserRepo)
     private readonly storeUserRepo: IStoreUserRepository,
+    @InjectQueue(QUEUES.MEDIA)
+    private readonly mediaQueue: Queue,
   ) {}
 
   // ── Super admin avatar ───────────────────────────────────────────────────────────
@@ -99,45 +108,44 @@ export class UploadsController {
     return { avatarUrl: url };
   }
 
-  // ── Product image (admin only) ─────────────────────────────────────────────
+  // ── Product image presign (admin only) ────────────────────────────────────
 
-  @Post('admin/uploads/product-image')
+  @Post('admin/uploads/product-image/presign')
   @UseGuards(AdminGuard)
-  @UseInterceptors(FileInterceptor('image'))
-  async uploadProductImage(
-    @Body() dto: UploadProductImageDto,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }),
-          new FileTypeValidator({ fileType: /(jpeg|jpg|png)$/ }),
-        ],
-      }),
-    )
-    file: Express.Multer.File,
-  ) {
-    const imageData = await this.uploadService.uploadProductImage(
-      file.originalname,
-      file.buffer,
-      dto.productId,
-    );
+  async presignProductImage(@Body() dto: PresignProductImageDto) {
+    const { key, url, uploadUrl, fields } =
+      await this.uploadService.presignProductImage(
+        dto.productId,
+        dto.fileName,
+        dto.mimeType,
+      );
 
-    const productImage = await this.productsService.addProductImage(
-      dto.productId,
-      {
-        storageKey: imageData.storageKey,
-        url: imageData.url,
-        alt: dto.alt,
-        isPrimary: dto.isPrimary ?? false,
-        sortOrder: dto.sortOrder ?? 0,
-        width: imageData.width,
-        height: imageData.height,
-        mimeType: imageData.mimeType ?? undefined,
-        bytes: imageData.bytes,
-        checksum: imageData.checksum,
-      },
-    );
+    const image = await this.productsService.createPendingImage(dto.productId, {
+      storageKey: key,
+      url,
+      alt: dto.alt,
+      isPrimary: dto.isPrimary ?? false,
+      sortOrder: dto.sortOrder ?? 0,
+    });
 
-    return { image: productImage };
+    return { imageId: image.id, uploadUrl, uploadFields: fields, finalUrl: url };
   }
+
+  @Post('admin/uploads/product-image/:imageId/confirm')
+  @UseGuards(AdminGuard)
+  async confirmProductImage(@Param('imageId') imageId: string) {
+    const image = await this.productsService.findImageById(imageId);
+    if (!image) throw new NotFoundException('Image not found');
+    if (image.status !== ProductImageStatus.PENDING) {
+      throw new BadRequestException('Image is not in a pending state');
+    }
+
+    await this.mediaQueue.add(JOBS.IMAGE_METADATA, {
+      imageId: image.id,
+      storageKey: image.storageKey,
+    });
+
+    return { image };
+  }
+
 }

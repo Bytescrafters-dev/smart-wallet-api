@@ -4,6 +4,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { ConfigService } from '@nestjs/config';
 import sharp from 'sharp';
 import * as crypto from 'crypto';
@@ -75,6 +76,28 @@ export class UploadsService {
       bytes: file.length,
       checksum,
     };
+  }
+
+  async presignProductImage(
+    productId: string,
+    fileName: string,
+    mimeType: string,
+  ) {
+    const key = `products/${productId}/${Date.now()}-${fileName}`;
+    const url = this.buildPublicUrl(key);
+
+    const { url: uploadUrl, fields } = await createPresignedPost(
+      this.s3Client,
+      {
+        Bucket: this.bucket,
+        Key: key,
+        Conditions: [['content-length-range', 0, 10 * 1024 * 1024]],
+        Fields: { 'Content-Type': mimeType },
+        Expires: 300,
+      },
+    );
+
+    return { key, url, uploadUrl, fields };
   }
 
   async deleteFile(storageKey: string): Promise<void> {

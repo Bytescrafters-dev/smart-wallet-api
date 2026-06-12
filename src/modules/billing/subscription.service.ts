@@ -13,7 +13,7 @@ import { UpdateSubscriptionSettingsDto } from './dtos/update-subscription-settin
 import {
   addBillingCycle,
   calcDueDate,
-  generateInvoiceNumber,
+  nextInvoiceNumber,
 } from './utils/billing.utils';
 
 @Injectable()
@@ -58,12 +58,11 @@ export class SubscriptionService {
         },
       });
 
-      const count = await tx.tenantInvoice.count();
       await tx.tenantInvoice.create({
         data: {
           tenantId,
           subscriptionId: current.id,
-          invoiceNumber: generateInvoiceNumber(count),
+          invoiceNumber: await nextInvoiceNumber(tx),
           amount: planPrice.amount,
           currency: planPrice.currency,
           dueDate,
@@ -159,12 +158,11 @@ export class SubscriptionService {
       });
 
       // Generate first invoice
-      const count = await tx.tenantInvoice.count();
       await tx.tenantInvoice.create({
         data: {
           tenantId,
           subscriptionId: newSubscription.id,
-          invoiceNumber: generateInvoiceNumber(count),
+          invoiceNumber: await nextInvoiceNumber(tx),
           amount: planPrice.amount,
           currency: planPrice.currency,
           dueDate,

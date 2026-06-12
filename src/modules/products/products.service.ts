@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ProductImageStatus } from '@prisma/client';
 import { TOKENS } from 'src/common/constants/tokens';
 import { IProductRepository } from './interfaces/product.repository.interface';
 import { IStoreRepository } from '../stores/interfaces/store.repository.interface';
@@ -711,12 +712,50 @@ export class ProductsService {
       alt: imageData.alt ?? null,
       isPrimary: imageData.isPrimary ?? false,
       sortOrder: imageData.sortOrder ?? 0,
+      status: ProductImageStatus.READY,
       width: imageData.width ?? null,
       height: imageData.height ?? null,
       mimeType: imageData.mimeType ?? null,
       bytes: imageData.bytes ?? null,
       checksum: imageData.checksum ?? null,
     });
+  }
+
+  async createPendingImage(
+    productId: string,
+    data: {
+      storageKey: string;
+      url: string;
+      alt?: string;
+      isPrimary?: boolean;
+      sortOrder?: number;
+    },
+  ) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    if (data.isPrimary) {
+      await this.productRepo.setPrimaryImage(productId, '');
+    }
+
+    return this.productRepo.addImage({
+      productId,
+      storageKey: data.storageKey,
+      url: data.url,
+      alt: data.alt ?? null,
+      isPrimary: data.isPrimary ?? false,
+      sortOrder: data.sortOrder ?? 0,
+      status: ProductImageStatus.PENDING,
+      width: null,
+      height: null,
+      mimeType: null,
+      bytes: null,
+      checksum: null,
+    });
+  }
+
+  async findImageById(imageId: string) {
+    return this.productRepo.findImageById(imageId);
   }
 
   async deleteProductImage(productId: string, imageId: string) {

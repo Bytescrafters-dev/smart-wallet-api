@@ -1,25 +1,31 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import {
-  addBillingCycle,
-  calcDueDate,
-  generateInvoiceNumber,
-} from './utils/billing.utils';
+import { JOBS, QUEUES } from 'src/common/queues/queues.constants';
+
+const JOB_OPTIONS = {
+  attempts: 3,
+  backoff: { type: 'exponential', delay: 5000 },
+} as const;
 
 @Injectable()
 export class BillingScheduler {
   private readonly logger = new Logger(BillingScheduler.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @InjectQueue(QUEUES.BILLING) private readonly billingQueue: Queue,
+  ) {}
 
   // ── Job 1: Trial expiry ────────────────────────────────────────────────────
-  // Runs daily at 01:00. Finds TRIAL subscriptions whose tenant trial has
-  // ended, activates them, and generates the first invoice.
+  // Runs daily at 01:00. Finds TRIAL subscriptions whose trial has ended and
+  // enqueues one job per subscription.
 
   @Cron('0 1 * * *')
   async handleTrialExpiry() {
-    this.logger.log('Running trial expiry check');
+    this.logger.log('Enqueueing trial expiry jobs');
     const now = new Date();
 
     const subscriptions = await this.prisma.tenantSubscription.findMany({
@@ -28,68 +34,27 @@ export class BillingScheduler {
         endedAt: null,
         tenant: { trialEndsAt: { lte: now } },
       },
-      include: {
-        planPrice: true,
-      },
+      select: { id: true },
     });
 
     for (const sub of subscriptions) {
-      try {
-        const periodStart = now;
-        const periodEnd = addBillingCycle(
-          periodStart,
-          sub.planPrice.billingCycle,
-        );
-        const dueDate = calcDueDate(periodEnd, sub.daysUntilDue);
-
-        await this.prisma.$transaction(async (tx) => {
-          await tx.tenantSubscription.update({
-            where: { id: sub.id },
-            data: {
-              status: 'ACTIVE',
-              currentPeriodStart: periodStart,
-              currentPeriodEnd: periodEnd,
-            },
-          });
-
-          await tx.tenant.update({
-            where: { id: sub.tenantId },
-            data: {
-              currentPlanName: sub.planPrice.planName,
-              status: 'ACTIVE',
-              trialEndsAt: null,
-            },
-          });
-
-          const count = await tx.tenantInvoice.count();
-          await tx.tenantInvoice.create({
-            data: {
-              tenantId: sub.tenantId,
-              subscriptionId: sub.id,
-              invoiceNumber: generateInvoiceNumber(count),
-              amount: sub.planPrice.amount,
-              currency: sub.planPrice.currency,
-              dueDate,
-            },
-          });
-        });
-
-        this.logger.log(
-          `Activated trial subscription ${sub.id} for tenant ${sub.tenantId}`,
-        );
-      } catch (err) {
-        this.logger.error(`Failed to activate subscription ${sub.id}: ${err}`);
-      }
+      await this.billingQueue.add(
+        JOBS.TRIAL_EXPIRY,
+        { subscriptionId: sub.id },
+        { ...JOB_OPTIONS, jobId: `trial-expiry:${sub.id}` },
+      );
     }
+
+    this.logger.log(`Enqueued ${subscriptions.length} trial expiry jobs`);
   }
 
   // ── Job 2: Period end ──────────────────────────────────────────────────────
   // Runs daily at 02:00. Finds ACTIVE subscriptions whose billing period has
-  // ended, advances the period, and generates the next invoice.
+  // ended and enqueues one job per subscription.
 
   @Cron('0 2 * * *')
   async handlePeriodEnd() {
-    this.logger.log('Running period end check');
+    this.logger.log('Enqueueing period end jobs');
     const now = new Date();
 
     const subscriptions = await this.prisma.tenantSubscription.findMany({
@@ -98,112 +63,42 @@ export class BillingScheduler {
         endedAt: null,
         currentPeriodEnd: { lte: now },
       },
-      include: { planPrice: true },
+      select: { id: true },
     });
 
     for (const sub of subscriptions) {
-      try {
-        if (sub.cancelAtPeriodEnd) {
-          await this.prisma.$transaction(async (tx) => {
-            await tx.tenantSubscription.update({
-              where: { id: sub.id },
-              data: { status: 'CANCELED', endedAt: now },
-            });
-            await tx.tenant.update({
-              where: { id: sub.tenantId },
-              data: { status: 'CANCELED' },
-            });
-          });
-          this.logger.log(
-            `Canceled subscription ${sub.id} for tenant ${sub.tenantId} at period end`,
-          );
-          continue;
-        }
-
-        // Idempotency: skip if a PENDING invoice already exists
-        const pendingExists = await this.prisma.tenantInvoice.findFirst({
-          where: { subscriptionId: sub.id, status: 'PENDING' },
-          select: { id: true },
-        });
-        if (pendingExists) continue;
-
-        const newPeriodStart = sub.currentPeriodEnd!;
-        const newPeriodEnd = addBillingCycle(
-          newPeriodStart,
-          sub.planPrice.billingCycle,
-        );
-        const dueDate = calcDueDate(newPeriodEnd, sub.daysUntilDue);
-
-        await this.prisma.$transaction(async (tx) => {
-          await tx.tenantSubscription.update({
-            where: { id: sub.id },
-            data: {
-              currentPeriodStart: newPeriodStart,
-              currentPeriodEnd: newPeriodEnd,
-            },
-          });
-
-          const count = await tx.tenantInvoice.count();
-          await tx.tenantInvoice.create({
-            data: {
-              tenantId: sub.tenantId,
-              subscriptionId: sub.id,
-              invoiceNumber: generateInvoiceNumber(count),
-              amount: sub.planPrice.amount,
-              currency: sub.planPrice.currency,
-              dueDate,
-            },
-          });
-        });
-
-        this.logger.log(`Generated invoice for subscription ${sub.id}`);
-      } catch (err) {
-        this.logger.error(`Failed to renew subscription ${sub.id}: ${err}`);
-      }
+      await this.billingQueue.add(
+        JOBS.PERIOD_END,
+        { subscriptionId: sub.id },
+        { ...JOB_OPTIONS, jobId: `period-end:${sub.id}` },
+      );
     }
+
+    this.logger.log(`Enqueued ${subscriptions.length} period end jobs`);
   }
 
   // ── Job 3: Overdue invoices ────────────────────────────────────────────────
-  // Runs daily at 03:00. Finds PENDING invoices past their due date, marks
-  // them PAST_DUE, suspends the tenant, and revokes all refresh tokens.
+  // Runs daily at 03:00. Finds PENDING invoices past their due date and
+  // enqueues one job per invoice.
 
   @Cron('0 3 * * *')
   async handleOverdue() {
-    this.logger.log('Running overdue invoice check');
+    this.logger.log('Enqueueing overdue invoice jobs');
     const now = new Date();
 
-    const overdueInvoices = await this.prisma.tenantInvoice.findMany({
+    const invoices = await this.prisma.tenantInvoice.findMany({
       where: { status: 'PENDING', dueDate: { lt: now } },
-      select: { id: true, tenantId: true },
+      select: { id: true },
     });
 
-    for (const invoice of overdueInvoices) {
-      try {
-        await this.prisma.$transaction(async (tx) => {
-          await tx.tenantInvoice.update({
-            where: { id: invoice.id },
-            data: { status: 'PAST_DUE' },
-          });
-
-          await tx.tenant.update({
-            where: { id: invoice.tenantId },
-            data: { status: 'SUSPENDED' },
-          });
-
-          await tx.refreshToken.updateMany({
-            where: { user: { tenantId: invoice.tenantId }, revokedAt: null },
-            data: { revokedAt: now },
-          });
-        });
-
-        this.logger.log(
-          `Suspended tenant ${invoice.tenantId} for overdue invoice ${invoice.id}`,
-        );
-      } catch (err) {
-        this.logger.error(
-          `Failed to process overdue invoice ${invoice.id}: ${err}`,
-        );
-      }
+    for (const invoice of invoices) {
+      await this.billingQueue.add(
+        JOBS.OVERDUE_INVOICE,
+        { invoiceId: invoice.id },
+        { ...JOB_OPTIONS, jobId: `overdue-invoice:${invoice.id}` },
+      );
     }
+
+    this.logger.log(`Enqueued ${invoices.length} overdue invoice jobs`);
   }
 }

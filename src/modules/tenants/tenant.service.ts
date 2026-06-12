@@ -11,6 +11,8 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 import { TOKENS } from 'src/common/constants/tokens';
 import { ITenantRepository } from './interfaces/tenant.repository.interface';
 import { IRefreshTokenRepository } from '../auth/interfaces/refresh-token.repository.interface';
+import { NotificationsService } from '../notifications/notifications.service';
+import { tenantWelcomeEmail } from '../notifications/templates/tenant-welcome';
 import { CreateTenantDto } from './dtos/create-tenant.dto';
 import { UpdateTenantDto } from './dtos/update-tenant.dto';
 import { ListTenantsQueryDto } from './dtos/list-tenants-query.dto';
@@ -23,6 +25,7 @@ export class TenantService {
     @Inject(TOKENS.RefreshTokenRepo)
     private readonly refreshTokenRepo: IRefreshTokenRepository,
     private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async createTenant(dto: CreateTenantDto, superAdminId: string) {
@@ -45,7 +48,7 @@ export class TenantService {
 
     const passwordHash = await bcrypt.hash(dto.password, 12);
 
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const tenant = await this.tenantRepo.create(
         {
           companyName: dto.companyName,
@@ -86,6 +89,15 @@ export class TenantService {
 
       return { tenant, user: true };
     });
+
+    const { subject, html } = tenantWelcomeEmail({
+      firstName: dto.firstName,
+      email: dto.email,
+      temporaryPassword: dto.password,
+    });
+    await this.notificationsService.sendEmail(dto.email, subject, html);
+
+    return result;
   }
 
   async listTenants(query: ListTenantsQueryDto) {
