@@ -19,4 +19,7 @@ export const TOKENS = {
   SuperAdminRepo: Symbol('SuperAdminRepository'),
   SuperAdminRefreshTokenRepo: Symbol('SuperAdminRefreshTokenRepository'),
   TenantRepo: Symbol('TenantRepository'),
+  PlanPriceRepo: Symbol('PlanPriceRepository'),
+  SubscriptionRepo: Symbol('SubscriptionRepository'),
+  InvoiceRepo: Symbol('InvoiceRepository'),
 };

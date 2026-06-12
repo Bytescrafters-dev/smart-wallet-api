@@ -6,9 +6,8 @@ import {
   IsOptional,
   IsString,
   MinLength,
-  ValidateIf,
 } from 'class-validator';
-import { TenantPlan, TenantStatus } from '@prisma/client';
+import { TenantStatus } from '@prisma/client';
 
 export class CreateTenantDto {
   @IsOptional()
@@ -34,16 +33,16 @@ export class CreateTenantDto {
   @MinLength(6)
   password!: string;
 
-  @IsEnum(TenantPlan)
-  plan!: TenantPlan;
-
   @IsEnum(TenantStatus)
   status!: TenantStatus;
 
-  @ValidateIf((o) => o.plan === TenantPlan.TRIAL)
-  @IsNotEmpty({ message: 'trialEndsAt is required for TRIAL plan' })
+  @IsOptional()
   @IsDateString()
   trialEndsAt?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  planPriceId!: string;
 
   @IsOptional()
   @IsString()

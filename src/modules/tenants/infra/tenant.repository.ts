@@ -58,12 +58,12 @@ export class TenantRepository implements ITenantRepository {
   }
 
   list(params: ListTenantsParams): Promise<any[]> {
-    const { status, plan, q, skip, take } = params;
+    const { status, currentPlanName, q, skip, take } = params;
 
     return this.prisma.tenant.findMany({
       where: {
         ...(status ? { status } : {}),
-        ...(plan ? { plan } : {}),
+        ...(currentPlanName ? { currentPlanName: { contains: currentPlanName, mode: 'insensitive' as const } } : {}),
         ...(q
           ? {
               OR: [
@@ -83,12 +83,12 @@ export class TenantRepository implements ITenantRepository {
   }
 
   count(params: Omit<ListTenantsParams, 'skip' | 'take'>): Promise<number> {
-    const { status, plan, q } = params;
+    const { status, currentPlanName, q } = params;
 
     return this.prisma.tenant.count({
       where: {
         ...(status ? { status } : {}),
-        ...(plan ? { plan } : {}),
+        ...(currentPlanName ? { currentPlanName: { contains: currentPlanName, mode: 'insensitive' as const } } : {}),
         ...(q
           ? {
               OR: [

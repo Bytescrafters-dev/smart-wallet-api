@@ -1,10 +1,5 @@
-import {
-  IsDateString,
-  IsEnum,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-import { TenantPlan, TenantStatus } from '@prisma/client';
+import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
+import { TenantStatus } from '@prisma/client';
 
 export class UpdateTenantDto {
   @IsOptional()
@@ -22,10 +17,6 @@ export class UpdateTenantDto {
   @IsOptional()
   @IsString()
   phone?: string;
-
-  @IsOptional()
-  @IsEnum(TenantPlan)
-  plan?: TenantPlan;
 
   @IsOptional()
   @IsEnum(TenantStatus)

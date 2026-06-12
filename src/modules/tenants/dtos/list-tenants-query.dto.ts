@@ -1,6 +1,6 @@
 import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { TenantPlan, TenantStatus } from '@prisma/client';
+import { TenantStatus } from '@prisma/client';
 
 export class ListTenantsQueryDto {
   @IsOptional()
@@ -20,8 +20,8 @@ export class ListTenantsQueryDto {
   status?: TenantStatus;
 
   @IsOptional()
-  @IsEnum(TenantPlan)
-  plan?: TenantPlan;
+  @IsString()
+  currentPlanName?: string;
 
   @IsOptional()
   @IsString()

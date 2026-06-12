@@ -1,4 +1,4 @@
-import { Tenant, TenantPlan, TenantStatus } from '@prisma/client';
+import { Tenant, TenantStatus } from '@prisma/client';
 
 export interface CreateTenantData {
   companyName?: string;
@@ -6,8 +6,8 @@ export interface CreateTenantData {
   lastName: string;
   phone?: string;
   email: string;
-  plan: TenantPlan;
   status: TenantStatus;
+  currentPlanName?: string | null;
   trialEndsAt?: Date | null;
   notes?: string;
   createdById?: string;
@@ -18,7 +18,6 @@ export interface UpdateTenantData {
   firstName?: string;
   lastName?: string;
   phone?: string;
-  plan?: TenantPlan;
   status?: TenantStatus;
   trialEndsAt?: Date | null;
   notes?: string;
@@ -26,7 +25,7 @@ export interface UpdateTenantData {
 
 export interface ListTenantsParams {
   status?: TenantStatus;
-  plan?: TenantPlan;
+  currentPlanName?: string;
   q?: string;
   skip: number;
   take: number;

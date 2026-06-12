@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { TenantPlan, TenantStatus } from '@prisma/client';
+import { TenantStatus } from '@prisma/client';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { TOKENS } from 'src/common/constants/tokens';
 import { ITenantRepository } from './interfaces/tenant.repository.interface';
@@ -34,14 +34,18 @@ export class TenantService {
       throw new ConflictException('A user with this email already exists');
     }
 
-    if (dto.plan === TenantPlan.TRIAL && !dto.trialEndsAt) {
-      throw new BadRequestException('trialEndsAt is required for TRIAL plan');
+    const planPrice = await this.prisma.planPrice.findUnique({
+      where: { id: dto.planPriceId },
+      select: { id: true, isActive: true },
+    });
+    if (!planPrice) throw new NotFoundException('Plan price not found');
+    if (!planPrice.isActive) {
+      throw new BadRequestException('Selected plan price is no longer active');
     }
 
     const passwordHash = await bcrypt.hash(dto.password, 12);
 
     return this.prisma.$transaction(async (tx) => {
-      // Tenant is created first so its id can be set on the User
       const tenant = await this.tenantRepo.create(
         {
           companyName: dto.companyName,
@@ -49,12 +53,9 @@ export class TenantService {
           lastName: dto.lastName,
           phone: dto.phone,
           email: dto.email,
-          plan: dto.plan,
           status: dto.status,
-          trialEndsAt:
-            dto.plan === TenantPlan.TRIAL && dto.trialEndsAt
-              ? new Date(dto.trialEndsAt)
-              : null,
+          currentPlanName: null,
+          trialEndsAt: dto.trialEndsAt ? new Date(dto.trialEndsAt) : null,
           notes: dto.notes,
           createdById: superAdminId,
         },
@@ -74,6 +75,15 @@ export class TenantService {
         },
       });
 
+      await tx.tenantSubscription.create({
+        data: {
+          tenantId: tenant.id,
+          planPriceId: dto.planPriceId,
+          status: 'TRIAL',
+          createdById: superAdminId,
+        },
+      });
+
       return { tenant, user: true };
     });
   }
@@ -85,7 +95,7 @@ export class TenantService {
 
     const params = {
       status: query.status,
-      plan: query.plan,
+      currentPlanName: query.currentPlanName,
       q: query.q,
       skip,
       take: limit,
@@ -116,7 +126,6 @@ export class TenantService {
       'firstName',
       'lastName',
       'phone',
-      'plan',
       'status',
       'notes',
     ] as const;
@@ -125,16 +134,8 @@ export class TenantService {
       if (dto[field] !== undefined) updateData[field] = dto[field];
     }
 
-    if (dto.plan !== undefined) {
-      if (dto.plan === TenantPlan.TRIAL) {
-        updateData.trialEndsAt = dto.trialEndsAt
-          ? new Date(dto.trialEndsAt)
-          : tenant.trialEndsAt;
-      } else {
-        updateData.trialEndsAt = null;
-      }
-    } else if (dto.trialEndsAt !== undefined) {
-      updateData.trialEndsAt = new Date(dto.trialEndsAt);
+    if (dto.trialEndsAt !== undefined) {
+      updateData.trialEndsAt = dto.trialEndsAt ? new Date(dto.trialEndsAt) : null;
     }
 
     const updated = await this.tenantRepo.update(id, updateData);

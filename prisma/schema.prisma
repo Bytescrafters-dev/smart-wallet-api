@@ -130,9 +130,11 @@ model SuperAdmin {
   createdById        String?
   createdBy          SuperAdmin?              @relation("SuperAdminCreator", fields: [createdById], references: [id])
   createdAdmins      SuperAdmin[]             @relation("SuperAdminCreator")
-  refreshTokens      SuperAdminRefreshToken[]
-  createdTenants     Tenant[]
-  createdAt          DateTime                 @default(now())
+  refreshTokens        SuperAdminRefreshToken[]
+  createdTenants       Tenant[]
+  createdSubscriptions TenantSubscription[]    @relation("SubscriptionCreator")
+  paidInvoices         TenantInvoice[]         @relation("InvoicePaidBy")
+  createdAt            DateTime                @default(now())
   updatedAt          DateTime                 @updatedAt
 
   @@index([role])
@@ -149,13 +151,6 @@ model SuperAdminRefreshToken {
   createdAt    DateTime   @default(now())
 }
 
-enum TenantPlan {
-  TRIAL
-  BASIC
-  PLUS
-  ENTERPRISE
-}
-
 enum TenantStatus {
   PENDING
   ACTIVE
@@ -169,20 +164,118 @@ model Tenant {
   firstName    String
   lastName     String
   phone        String?
-  email        String       @unique
-  plan         TenantPlan   @default(TRIAL)
-  status       TenantStatus @default(PENDING)
+  email           String       @unique
+  currentPlanName String?
+  status          TenantStatus @default(PENDING)
   trialEndsAt  DateTime?
   notes        String?
   createdById  String?
-  createdBy    SuperAdmin?  @relation(fields: [createdById], references: [id])
-  users        User[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  createdBy     SuperAdmin?          @relation(fields: [createdById], references: [id])
+  users         User[]
+  subscriptions TenantSubscription[]
+  invoices      TenantInvoice[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
 
   @@index([status])
-  @@index([plan])
+  @@index([currentPlanName])
   @@index([createdById])
+}
+
+
+enum BillingCycle {
+  MONTHLY
+  QUARTERLY
+  SEMI_ANNUAL
+  ANNUAL
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAST_DUE
+  PAID
+  VOID
+}
+
+enum PaymentMethod {
+  MANUAL
+  STRIPE
+}
+
+model PlanPrice {
+  id            String               @id @default(cuid())
+  planName      String
+  billingCycle  BillingCycle
+  currency      String
+  amount        Int
+  features      Json?
+  isActive      Boolean              @default(true)
+  subscriptions TenantSubscription[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@unique([planName, billingCycle, currency])
+  @@index([planName])
+  @@index([isActive])
+}
+
+model TenantSubscription {
+  id                   String             @id @default(cuid())
+  tenantId             String
+  tenant               Tenant             @relation(fields: [tenantId], references: [id])
+  planPriceId          String
+  planPrice            PlanPrice          @relation(fields: [planPriceId], references: [id])
+  status               SubscriptionStatus @default(TRIAL)
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  endedAt              DateTime?
+  cancelAtPeriodEnd    Boolean            @default(false)
+  daysUntilDue         Int                @default(3)
+  createdById          String?
+  createdBy            SuperAdmin?        @relation("SubscriptionCreator", fields: [createdById], references: [id])
+  stripeSubscriptionId String?
+  invoices             TenantInvoice[]
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@index([tenantId])
+  @@index([planPriceId])
+  @@index([status])
+  @@index([endedAt])
+  @@index([currentPeriodEnd])
+}
+
+model TenantInvoice {
+  id              String             @id @default(cuid())
+  tenantId        String
+  tenant          Tenant             @relation(fields: [tenantId], references: [id])
+  subscriptionId  String
+  subscription    TenantSubscription @relation(fields: [subscriptionId], references: [id])
+  invoiceNumber   String             @unique
+  amount          Int
+  currency        String
+  status          InvoiceStatus      @default(PENDING)
+  dueDate         DateTime
+  paidAt          DateTime?
+  paidById        String?
+  paidBy          SuperAdmin?        @relation("InvoicePaidBy", fields: [paidById], references: [id])
+  paymentMethod   PaymentMethod      @default(MANUAL)
+  notes           String?
+  stripeInvoiceId String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([tenantId])
+  @@index([subscriptionId])
+  @@index([status])
+  @@index([dueDate])
 }
 
 model Store {

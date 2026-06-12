@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
-import { PrismaClient, TenantPlan, TenantStatus } from '@prisma/client';
+import { PrismaClient, TenantStatus } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 const prisma = new PrismaClient({
@@ -23,7 +23,7 @@ async function main() {
       firstName: 'Ravindu',
       lastName: 'Landekumbura',
       phone: '',
-      plan: TenantPlan.BASIC,
+      currentPlanName: 'Basic',
       status: TenantStatus.ACTIVE,
     },
   });
