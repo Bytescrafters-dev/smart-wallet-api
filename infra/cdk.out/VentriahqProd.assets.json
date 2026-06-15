@@ -1,0 +1,36 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "02b51ab524e7bcf8f477de3e71e5f9a72e448301b26ba62e9e75a14f9c55a093": {
+      "displayName": "VentriahqProd/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.02b51ab524e7bcf8f477de3e71e5f9a72e448301b26ba62e9e75a14f9c55a093",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "089126833489-ap-southeast-2-0df5ee59": {
+          "bucketName": "cdk-hnb659fds-assets-089126833489-ap-southeast-2",
+          "objectKey": "02b51ab524e7bcf8f477de3e71e5f9a72e448301b26ba62e9e75a14f9c55a093.zip",
+          "region": "ap-southeast-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::089126833489:role/cdk-hnb659fds-file-publishing-role-089126833489-ap-southeast-2"
+        }
+      }
+    },
+    "9e2b3a69f3f81dfa8b4719824fe61b2586e6108ab11cc41a7126e703b4210098": {
+      "displayName": "VentriahqProd Template",
+      "source": {
+        "path": "VentriahqProd.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "089126833489-ap-southeast-2-daad9e90": {
+          "bucketName": "cdk-hnb659fds-assets-089126833489-ap-southeast-2",
+          "objectKey": "9e2b3a69f3f81dfa8b4719824fe61b2586e6108ab11cc41a7126e703b4210098.json",
+          "region": "ap-southeast-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::089126833489:role/cdk-hnb659fds-file-publishing-role-089126833489-ap-southeast-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -5,11 +5,14 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
+  adapter: new PrismaPg({
+    connectionString: process.env.DATABASE_URL!,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
+  }),
 });
 
 async function main() {
-  const email = 'superadmin@bytecrafters.com';
+  const email = 'info.bytecrafters@gmail.com';
   const password = 'superadmin123';
 
   const existing = await prisma.superAdmin.findUnique({ where: { email } });

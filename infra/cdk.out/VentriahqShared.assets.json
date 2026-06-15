@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "d5e0a02045a0191f1a45fb87da641290ccd7c63eca75753bae08b9d3bb9653bb": {
+      "displayName": "VentriahqShared Template",
+      "source": {
+        "path": "VentriahqShared.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "089126833489-ap-southeast-2-ff5cbfef": {
+          "bucketName": "cdk-hnb659fds-assets-089126833489-ap-southeast-2",
+          "objectKey": "d5e0a02045a0191f1a45fb87da641290ccd7c63eca75753bae08b9d3bb9653bb.json",
+          "region": "ap-southeast-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::089126833489:role/cdk-hnb659fds-file-publishing-role-089126833489-ap-southeast-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,1155 @@
+{
+  "/VentriahqDev": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3441)",
+        "Annotations.addWarningV2 (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2129)",
+        "resolveValue (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:6065)",
+        "resolveReferences (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:4778)",
+        "prepareApp (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/core/lib/private/prepare-app.js:1:1514)",
+        "synthesize (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/core/lib/private/synthesis.js:1:3580)",
+        "App.synth (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/core/lib/stage.js:1:4636)",
+        "App.synth (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/core/lib/app.js:1:4814)",
+        "process.<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/core/lib/app.js:1:3773)",
+        "Object.onceWrapper (node:events:623:26)",
+        "process.emit (node:events:508:28)",
+        "process.emit (node:domain:489:12)",
+        "process.emit.sharedData.processEmitHook.installedValue [as emit] (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/@cspotcode/source-map-support/source-map-support.js:745:40)"
+      ]
+    }
+  ],
+  "/VentriahqDev/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/VentriahqDev/RedisSubnetGroup": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RedisSubnetGroup"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:102:30)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Redis": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Redis"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:111:19)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/VentriahqDev/ApiUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiUrl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:381:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/RdsEndpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RdsEndpoint"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:386:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/RdsSecretArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RdsSecretArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:391:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/AppSecretArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppSecretArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:396:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/UploadsBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UploadsBucketName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:402:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/EcsClusterName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:407:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/MigrationTaskDefFamily": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MigrationTaskDefFamily"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:412:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/PrivateSubnetIds": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateSubnetIds"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:418:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/EcsSecurityGroupId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsSecurityGroupId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:424:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/VentriahqDev/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/AlbSg/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlbSg1155C1BE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new SecurityGroup2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:48:19)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/EcsSg/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsSg17B4B0B3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new SecurityGroup2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:56:19)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/EcsSg/from VentriahqDevAlbSgE2A32B9C:8000": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsSgfromVentriahqDevAlbSgE2A32B9C80009225E2FB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:61:11)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/RdsSg/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RdsSg7F9F43B6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new SecurityGroup2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:63:19)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/RdsSg/from VentriahqDevEcsSg5FDAAE5A:5432": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RdsSgfromVentriahqDevEcsSg5FDAAE5A5432B8802BCA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:68:11)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/RedisSg/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RedisSgFB48DCCD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new SecurityGroup2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:70:21)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/RedisSg/from VentriahqDevEcsSg5FDAAE5A:6379": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RedisSgfromVentriahqDevEcsSg5FDAAE5A6379FE9AB872"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:75:13)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Database/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseB269D8BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new DatabaseInstance2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:78:22)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/UploadsBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UploadsBucket5E5E9B64"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:121:27)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/VentriahqDev/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/VentriahqDev/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/VentriahqDev/AppSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppSecretFAB5164C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Secret2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:143:23)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/TaskRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskRole30FC0FBB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Role2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:157:22)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExecutionRole605A040B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Role2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:176:27)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Cluster/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterEB0386A7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Cluster2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:189:21)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/ApiLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiLogs3D05D88B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new LogGroup2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:228:25)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/SchedulerLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchedulerLogs62325BF3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new LogGroup2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:234:31)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/MigrationLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MigrationLogs670D4322"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new LogGroup2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:240:31)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/ApiTaskDef/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiTaskDef37DBDBD0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new FargateTaskDefinition2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:247:24)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/SchedulerTaskDef/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchedulerTaskDef76550FAF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new FargateTaskDefinition2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:272:30)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/MigrationTaskDef/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MigrationTaskDefDA418933"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new FargateTaskDefinition2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:300:30)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Alb/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alb16C2F182"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new ApplicationLoadBalancer2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:327:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/ApiService/Service": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiServiceC9037CF0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new FargateService2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:341:24)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/SchedulerService/Service": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchedulerService59181E72"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new FargateService2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:368:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/publicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet1Subnet2BB74ED7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:268 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/publicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet1RouteTable15C15F8E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:268 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/publicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet1RouteTableAssociation4E83B6E4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:268 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/publicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet1DefaultRouteB88F9E93"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:208 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/publicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet1EIP411541E6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/publicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet1NATGatewayA036E8A6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/publicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet2SubnetE34B022A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:268 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/publicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet2RouteTableC5A6DF77"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:268 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/publicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet2RouteTableAssociationCCE257FF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:268 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/publicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet2DefaultRoute732F0BEB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:208 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/privateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcprivateSubnet1SubnetCEAD3716"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:270 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/privateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcprivateSubnet1RouteTable1979EACB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:270 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/privateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcprivateSubnet1RouteTableAssociationEEBD93CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:270 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/privateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcprivateSubnet1DefaultRouteB506891A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/privateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcprivateSubnet2Subnet2DE7549C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:270 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/privateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcprivateSubnet2RouteTable4D0FFC8C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:270 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/privateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcprivateSubnet2RouteTableAssociationB691E645"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:270 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/privateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcprivateSubnet2DefaultRouteBAC3C1C3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/isolatedSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet1SubnetE62B1B9B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:272 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/isolatedSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet1RouteTableE442650B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:272 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/isolatedSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet1RouteTableAssociationD259E31A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:272 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/isolatedSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet2Subnet39217055"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:272 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/isolatedSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet2RouteTable334F9764"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:272 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/isolatedSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet2RouteTableAssociation25A4716F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:272 in aws-cdk-lib...",
+        "Array.forEach (:)",
+        "...aws-cdk-lib..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Vpc2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:28:17)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Database/SubnetGroup/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseSubnetGroup7D60F180"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new DatabaseInstance2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:78:22)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Database/Secret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseSecret3B817195"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new DatabaseInstance2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:78:22)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)"
+      ]
+    }
+  ],
+  "/VentriahqDev/UploadsBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UploadsBucketPolicy34A32B0B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:121:27)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/VentriahqDev/UploadsBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UploadsBucketAutoDeleteObjectsCustomResourceFFD11C72"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/VentriahqDev/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExecutionRoleDefaultPolicyA5B92313"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.grantRead in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:185:15)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)"
+      ]
+    }
+  ],
+  "/VentriahqDev/Alb/HttpListener/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlbHttpListener00C8B33E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:335:26)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Database/Secret/Attachment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseSecretAttachmentE5D1B020"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new DatabaseInstance2 in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:78:22)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqDev/Alb/HttpListener/ApiTargetsGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlbHttpListenerApiTargetsGroupD502DD1A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new EnvStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/env-stack.ts:353:14)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ]
+}

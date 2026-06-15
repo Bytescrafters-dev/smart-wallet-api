@@ -1,0 +1,2353 @@
+{
+ "Resources": {
+  "Vpc8378EB38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ventriahq-dev-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/Resource"
+   }
+  },
+  "VpcpublicSubnet1Subnet2BB74ED7": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-southeast-2a",
+    "CidrBlock": "10.0.0.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/publicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/publicSubnet1/Subnet"
+   }
+  },
+  "VpcpublicSubnet1RouteTable15C15F8E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/publicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/publicSubnet1/RouteTable"
+   }
+  },
+  "VpcpublicSubnet1RouteTableAssociation4E83B6E4": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcpublicSubnet1RouteTable15C15F8E"
+    },
+    "SubnetId": {
+     "Ref": "VpcpublicSubnet1Subnet2BB74ED7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/publicSubnet1/RouteTableAssociation"
+   }
+  },
+  "VpcpublicSubnet1DefaultRouteB88F9E93": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcpublicSubnet1RouteTable15C15F8E"
+    }
+   },
+   "DependsOn": [
+    "VpcVPCGWBF912B6E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/publicSubnet1/DefaultRoute"
+   }
+  },
+  "VpcpublicSubnet1EIP411541E6": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/publicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/publicSubnet1/EIP"
+   }
+  },
+  "VpcpublicSubnet1NATGatewayA036E8A6": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VpcpublicSubnet1EIP411541E6",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "VpcpublicSubnet1Subnet2BB74ED7"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/publicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcpublicSubnet1DefaultRouteB88F9E93",
+    "VpcpublicSubnet1RouteTableAssociation4E83B6E4"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/publicSubnet1/NATGateway"
+   }
+  },
+  "VpcpublicSubnet2SubnetE34B022A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-southeast-2b",
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/publicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/publicSubnet2/Subnet"
+   }
+  },
+  "VpcpublicSubnet2RouteTableC5A6DF77": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/publicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/publicSubnet2/RouteTable"
+   }
+  },
+  "VpcpublicSubnet2RouteTableAssociationCCE257FF": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcpublicSubnet2RouteTableC5A6DF77"
+    },
+    "SubnetId": {
+     "Ref": "VpcpublicSubnet2SubnetE34B022A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/publicSubnet2/RouteTableAssociation"
+   }
+  },
+  "VpcpublicSubnet2DefaultRoute732F0BEB": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcpublicSubnet2RouteTableC5A6DF77"
+    }
+   },
+   "DependsOn": [
+    "VpcVPCGWBF912B6E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/publicSubnet2/DefaultRoute"
+   }
+  },
+  "VpcprivateSubnet1SubnetCEAD3716": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-southeast-2a",
+    "CidrBlock": "10.0.2.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/privateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/privateSubnet1/Subnet"
+   }
+  },
+  "VpcprivateSubnet1RouteTable1979EACB": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/privateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/privateSubnet1/RouteTable"
+   }
+  },
+  "VpcprivateSubnet1RouteTableAssociationEEBD93CE": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcprivateSubnet1RouteTable1979EACB"
+    },
+    "SubnetId": {
+     "Ref": "VpcprivateSubnet1SubnetCEAD3716"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/privateSubnet1/RouteTableAssociation"
+   }
+  },
+  "VpcprivateSubnet1DefaultRouteB506891A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VpcpublicSubnet1NATGatewayA036E8A6"
+    },
+    "RouteTableId": {
+     "Ref": "VpcprivateSubnet1RouteTable1979EACB"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/privateSubnet1/DefaultRoute"
+   }
+  },
+  "VpcprivateSubnet2Subnet2DE7549C": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-southeast-2b",
+    "CidrBlock": "10.0.3.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/privateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/privateSubnet2/Subnet"
+   }
+  },
+  "VpcprivateSubnet2RouteTable4D0FFC8C": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/privateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/privateSubnet2/RouteTable"
+   }
+  },
+  "VpcprivateSubnet2RouteTableAssociationB691E645": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcprivateSubnet2RouteTable4D0FFC8C"
+    },
+    "SubnetId": {
+     "Ref": "VpcprivateSubnet2Subnet2DE7549C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/privateSubnet2/RouteTableAssociation"
+   }
+  },
+  "VpcprivateSubnet2DefaultRouteBAC3C1C3": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VpcpublicSubnet1NATGatewayA036E8A6"
+    },
+    "RouteTableId": {
+     "Ref": "VpcprivateSubnet2RouteTable4D0FFC8C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/privateSubnet2/DefaultRoute"
+   }
+  },
+  "VpcisolatedSubnet1SubnetE62B1B9B": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-southeast-2a",
+    "CidrBlock": "10.0.4.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/isolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/isolatedSubnet1/Subnet"
+   }
+  },
+  "VpcisolatedSubnet1RouteTableE442650B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/isolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/isolatedSubnet1/RouteTable"
+   }
+  },
+  "VpcisolatedSubnet1RouteTableAssociationD259E31A": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcisolatedSubnet1RouteTableE442650B"
+    },
+    "SubnetId": {
+     "Ref": "VpcisolatedSubnet1SubnetE62B1B9B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/isolatedSubnet1/RouteTableAssociation"
+   }
+  },
+  "VpcisolatedSubnet2Subnet39217055": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "ap-southeast-2b",
+    "CidrBlock": "10.0.5.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/isolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/isolatedSubnet2/Subnet"
+   }
+  },
+  "VpcisolatedSubnet2RouteTable334F9764": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VentriahqDev/Vpc/isolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/isolatedSubnet2/RouteTable"
+   }
+  },
+  "VpcisolatedSubnet2RouteTableAssociation25A4716F": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcisolatedSubnet2RouteTable334F9764"
+    },
+    "SubnetId": {
+     "Ref": "VpcisolatedSubnet2Subnet39217055"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/isolatedSubnet2/RouteTableAssociation"
+   }
+  },
+  "VpcIGWD7BA715C": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ventriahq-dev-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/IGW"
+   }
+  },
+  "VpcVPCGWBF912B6E": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "VpcIGWD7BA715C"
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/VPCGW"
+   }
+  },
+  "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "Vpc8378EB38",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": "089126833489"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Vpc/RestrictDefaultSecurityGroupCustomResource/Default"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:ap-southeast-2:089126833489:security-group/",
+             {
+              "Fn::GetAtt": [
+               "Vpc8378EB38",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-089126833489-ap-southeast-2",
+     "S3Key": "02b51ab524e7bcf8f477de3e71e5f9a72e448301b26ba62e9e75a14f9c55a093.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.02b51ab524e7bcf8f477de3e71e5f9a72e448301b26ba62e9e75a14f9c55a093",
+    "aws:asset:property": "Code"
+   }
+  },
+  "AlbSg1155C1BE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "ALB - allow inbound HTTP/HTTPS",
+    "GroupName": "ventriahq-dev-alb-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "HTTP",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     },
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "HTTPS",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/AlbSg/Resource"
+   }
+  },
+  "EcsSg17B4B0B3": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "ECS tasks - allow inbound from ALB only",
+    "GroupName": "ventriahq-dev-ecs-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/EcsSg/Resource"
+   }
+  },
+  "EcsSgfromVentriahqDevAlbSgE2A32B9C80009225E2FB": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "From ALB",
+    "FromPort": 8000,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "EcsSg17B4B0B3",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "AlbSg1155C1BE",
+      "GroupId"
+     ]
+    },
+    "ToPort": 8000
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/EcsSg/from VentriahqDevAlbSgE2A32B9C:8000"
+   }
+  },
+  "RdsSg7F9F43B6": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS - allow inbound from ECS only",
+    "GroupName": "ventriahq-dev-rds-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/RdsSg/Resource"
+   }
+  },
+  "RdsSgfromVentriahqDevEcsSg5FDAAE5A5432B8802BCA": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "From ECS",
+    "FromPort": 5432,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "RdsSg7F9F43B6",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "EcsSg17B4B0B3",
+      "GroupId"
+     ]
+    },
+    "ToPort": 5432
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/RdsSg/from VentriahqDevEcsSg5FDAAE5A:5432"
+   }
+  },
+  "RedisSgFB48DCCD": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Redis - allow inbound from ECS only",
+    "GroupName": "ventriahq-dev-redis-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/RedisSg/Resource"
+   }
+  },
+  "RedisSgfromVentriahqDevEcsSg5FDAAE5A6379FE9AB872": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "From ECS",
+    "FromPort": 6379,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "RedisSgFB48DCCD",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "EcsSg17B4B0B3",
+      "GroupId"
+     ]
+    },
+    "ToPort": 6379
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/RedisSg/from VentriahqDevEcsSg5FDAAE5A:6379"
+   }
+  },
+  "DatabaseSubnetGroup7D60F180": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for Database database",
+    "SubnetIds": [
+     {
+      "Ref": "VpcisolatedSubnet1SubnetE62B1B9B"
+     },
+     {
+      "Ref": "VpcisolatedSubnet2Subnet39217055"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Database/SubnetGroup/Default"
+   }
+  },
+  "DatabaseSecret3B817195": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"postgres\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Database/Secret/Resource"
+   }
+  },
+  "DatabaseSecretAttachmentE5D1B020": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "DatabaseSecret3B817195"
+    },
+    "TargetId": {
+     "Ref": "DatabaseB269D8BB"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Database/Secret/Attachment/Resource"
+   }
+  },
+  "DatabaseB269D8BB": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "AllocatedStorage": "20",
+    "BackupRetentionPeriod": 1,
+    "CopyTagsToSnapshot": true,
+    "DBInstanceClass": "db.t4g.small",
+    "DBInstanceIdentifier": "ventriahq-dev-db",
+    "DBName": "ventriahq",
+    "DBSubnetGroupName": {
+     "Ref": "DatabaseSubnetGroup7D60F180"
+    },
+    "DeletionProtection": false,
+    "Engine": "postgres",
+    "EngineVersion": "16",
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "DatabaseSecret3B817195"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "DatabaseSecret3B817195"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "MultiAZ": false,
+    "PubliclyAccessible": false,
+    "StorageEncrypted": true,
+    "StorageType": "gp2",
+    "VPCSecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "RdsSg7F9F43B6",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Database/Resource"
+   }
+  },
+  "RedisSubnetGroup": {
+   "Type": "AWS::ElastiCache::SubnetGroup",
+   "Properties": {
+    "Description": "ventriahq-dev redis subnet group",
+    "SubnetIds": [
+     {
+      "Ref": "VpcisolatedSubnet1SubnetE62B1B9B"
+     },
+     {
+      "Ref": "VpcisolatedSubnet2Subnet39217055"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/RedisSubnetGroup"
+   }
+  },
+  "Redis": {
+   "Type": "AWS::ElastiCache::CacheCluster",
+   "Properties": {
+    "CacheNodeType": "cache.t4g.micro",
+    "CacheSubnetGroupName": {
+     "Ref": "RedisSubnetGroup"
+    },
+    "ClusterName": "ventriahq-dev-redis",
+    "Engine": "redis",
+    "NumCacheNodes": 1,
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "RedisSgFB48DCCD",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Redis"
+   }
+  },
+  "UploadsBucket5E5E9B64": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": "ventriahq-dev-uploads-089126833489",
+    "CorsConfiguration": {
+     "CorsRules": [
+      {
+       "AllowedHeaders": [
+        "*"
+       ],
+       "AllowedMethods": [
+        "PUT",
+        "POST"
+       ],
+       "AllowedOrigins": [
+        "https://dev.admin.xtrills.com",
+        "https://dev.xtrills.com"
+       ]
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/UploadsBucket/Resource"
+   }
+  },
+  "UploadsBucketPolicy34A32B0B": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "UploadsBucket5E5E9B64"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:PutBucketPolicy",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "UploadsBucket5E5E9B64",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "UploadsBucket5E5E9B64",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/UploadsBucket/Policy/Resource"
+   }
+  },
+  "UploadsBucketAutoDeleteObjectsCustomResourceFFD11C72": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "UploadsBucket5E5E9B64"
+    }
+   },
+   "DependsOn": [
+    "UploadsBucketPolicy34A32B0B"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/UploadsBucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-089126833489-ap-southeast-2",
+     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "UploadsBucket5E5E9B64"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+    "aws:asset:property": "Code"
+   }
+  },
+  "AppSecretFAB5164C": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "Ventriahq dev — fill in REPLACE_ME values after first deploy",
+    "Name": "ventriahq/dev",
+    "SecretString": "{\"DATABASE_URL\":\"REPLACE_ME\",\"JWT_SECRET\":\"REPLACE_ME\",\"JWT_EXPIRES\":\"15m\",\"REFRESH_EXPIRES_DAYS\":\"30\",\"SES_FROM_ADDRESS\":\"REPLACE_ME\",\"REDIS_PASSWORD\":\"\"}"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/AppSecret/Resource"
+   }
+  },
+  "TaskRole30FC0FBB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "ses:SendEmail",
+          "ses:SendRawEmail"
+         ],
+         "Effect": "Allow",
+         "Resource": "*"
+        },
+        {
+         "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            {
+             "Fn::GetAtt": [
+              "UploadsBucket5E5E9B64",
+              "Arn"
+             ]
+            },
+            "/*"
+           ]
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AppPolicy"
+     }
+    ],
+    "RoleName": "ventriahq-dev-task-role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/TaskRole/Resource"
+   }
+  },
+  "ExecutionRole605A040B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "ventriahq-dev-execution-role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/ExecutionRole/Resource"
+   }
+  },
+  "ExecutionRoleDefaultPolicyA5B92313": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "AppSecretFAB5164C"
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "DatabaseSecretAttachmentE5D1B020"
+       }
+      },
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "VentriahqShared:ExportsOutputFnGetAttRepository22E53BBDArn3AD4E30B"
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ApiLogs3D05D88B",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SchedulerLogs62325BF3",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MigrationLogs670D4322",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ExecutionRoleDefaultPolicyA5B92313",
+    "Roles": [
+     {
+      "Ref": "ExecutionRole605A040B"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/ExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "ClusterEB0386A7": {
+   "Type": "AWS::ECS::Cluster",
+   "Properties": {
+    "ClusterName": "ventriahq-dev-cluster",
+    "ClusterSettings": [
+     {
+      "Name": "containerInsights",
+      "Value": "enabled"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Cluster/Resource"
+   }
+  },
+  "ApiLogs3D05D88B": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/ecs/ventriahq-dev/api",
+    "RetentionInDays": 14
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/ApiLogs/Resource"
+   }
+  },
+  "SchedulerLogs62325BF3": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/ecs/ventriahq-dev/scheduler",
+    "RetentionInDays": 14
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/SchedulerLogs/Resource"
+   }
+  },
+  "MigrationLogs670D4322": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/ecs/ventriahq-dev/migration",
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/MigrationLogs/Resource"
+   }
+  },
+  "ApiTaskDef37DBDBD0": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "NODE_ENV",
+        "Value": "production"
+       },
+       {
+        "Name": "AWS_REGION",
+        "Value": "ap-southeast-2"
+       },
+       {
+        "Name": "S3_BUCKET",
+        "Value": {
+         "Ref": "UploadsBucket5E5E9B64"
+        }
+       },
+       {
+        "Name": "REDIS_HOST",
+        "Value": {
+         "Fn::GetAtt": [
+          "Redis",
+          "RedisEndpoint.Address"
+         ]
+        }
+       },
+       {
+        "Name": "REDIS_PORT",
+        "Value": {
+         "Fn::GetAtt": [
+          "Redis",
+          "RedisEndpoint.Port"
+         ]
+        }
+       },
+       {
+        "Name": "REDIS_TLS",
+        "Value": "false"
+       },
+       {
+        "Name": "CORS_ORIGIN",
+        "Value": "https://dev.admin.xtrills.com, https://dev.xtrills.com"
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           4,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::ImportValue": "VentriahqShared:ExportsOutputFnGetAttRepository22E53BBDArn3AD4E30B"
+             }
+            ]
+           }
+          ]
+         },
+         ".dkr.ecr.",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::ImportValue": "VentriahqShared:ExportsOutputFnGetAttRepository22E53BBDArn3AD4E30B"
+             }
+            ]
+           }
+          ]
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Fn::ImportValue": "VentriahqShared:ExportsOutputRefRepository22E53BBD9A9E013B"
+         },
+         ":dev"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "ApiLogs3D05D88B"
+        },
+        "awslogs-stream-prefix": "api",
+        "awslogs-region": "ap-southeast-2"
+       }
+      },
+      "Name": "api",
+      "PortMappings": [
+       {
+        "ContainerPort": 8000,
+        "Protocol": "tcp"
+       }
+      ],
+      "Secrets": [
+       {
+        "Name": "DATABASE_URL",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":DATABASE_URL::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "JWT_SECRET",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":JWT_SECRET::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "JWT_EXPIRES",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":JWT_EXPIRES::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "REFRESH_EXPIRES_DAYS",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":REFRESH_EXPIRES_DAYS::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "SES_FROM_ADDRESS",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":SES_FROM_ADDRESS::"
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ],
+    "Cpu": "512",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "ExecutionRole605A040B",
+      "Arn"
+     ]
+    },
+    "Family": "ventriahq-dev-api",
+    "Memory": "1024",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "TaskRole30FC0FBB",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/ApiTaskDef/Resource"
+   }
+  },
+  "SchedulerTaskDef76550FAF": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "NODE_ENV",
+        "Value": "production"
+       },
+       {
+        "Name": "AWS_REGION",
+        "Value": "ap-southeast-2"
+       },
+       {
+        "Name": "S3_BUCKET",
+        "Value": {
+         "Ref": "UploadsBucket5E5E9B64"
+        }
+       },
+       {
+        "Name": "REDIS_HOST",
+        "Value": {
+         "Fn::GetAtt": [
+          "Redis",
+          "RedisEndpoint.Address"
+         ]
+        }
+       },
+       {
+        "Name": "REDIS_PORT",
+        "Value": {
+         "Fn::GetAtt": [
+          "Redis",
+          "RedisEndpoint.Port"
+         ]
+        }
+       },
+       {
+        "Name": "REDIS_TLS",
+        "Value": "false"
+       },
+       {
+        "Name": "CORS_ORIGIN",
+        "Value": "https://dev.admin.xtrills.com, https://dev.xtrills.com"
+       },
+       {
+        "Name": "SCHEDULER_ONLY",
+        "Value": "true"
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           4,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::ImportValue": "VentriahqShared:ExportsOutputFnGetAttRepository22E53BBDArn3AD4E30B"
+             }
+            ]
+           }
+          ]
+         },
+         ".dkr.ecr.",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::ImportValue": "VentriahqShared:ExportsOutputFnGetAttRepository22E53BBDArn3AD4E30B"
+             }
+            ]
+           }
+          ]
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Fn::ImportValue": "VentriahqShared:ExportsOutputRefRepository22E53BBD9A9E013B"
+         },
+         ":dev"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "SchedulerLogs62325BF3"
+        },
+        "awslogs-stream-prefix": "scheduler",
+        "awslogs-region": "ap-southeast-2"
+       }
+      },
+      "Name": "scheduler",
+      "Secrets": [
+       {
+        "Name": "DATABASE_URL",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":DATABASE_URL::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "JWT_SECRET",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":JWT_SECRET::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "JWT_EXPIRES",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":JWT_EXPIRES::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "REFRESH_EXPIRES_DAYS",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":REFRESH_EXPIRES_DAYS::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "SES_FROM_ADDRESS",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":SES_FROM_ADDRESS::"
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ],
+    "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "ExecutionRole605A040B",
+      "Arn"
+     ]
+    },
+    "Family": "ventriahq-dev-scheduler",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "TaskRole30FC0FBB",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/SchedulerTaskDef/Resource"
+   }
+  },
+  "MigrationTaskDefDA418933": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Command": [
+       "node",
+       "node_modules/.bin/prisma",
+       "migrate",
+       "deploy"
+      ],
+      "Environment": [
+       {
+        "Name": "NODE_ENV",
+        "Value": "production"
+       },
+       {
+        "Name": "AWS_REGION",
+        "Value": "ap-southeast-2"
+       },
+       {
+        "Name": "S3_BUCKET",
+        "Value": {
+         "Ref": "UploadsBucket5E5E9B64"
+        }
+       },
+       {
+        "Name": "REDIS_HOST",
+        "Value": {
+         "Fn::GetAtt": [
+          "Redis",
+          "RedisEndpoint.Address"
+         ]
+        }
+       },
+       {
+        "Name": "REDIS_PORT",
+        "Value": {
+         "Fn::GetAtt": [
+          "Redis",
+          "RedisEndpoint.Port"
+         ]
+        }
+       },
+       {
+        "Name": "REDIS_TLS",
+        "Value": "false"
+       },
+       {
+        "Name": "CORS_ORIGIN",
+        "Value": "https://dev.admin.xtrills.com, https://dev.xtrills.com"
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           4,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::ImportValue": "VentriahqShared:ExportsOutputFnGetAttRepository22E53BBDArn3AD4E30B"
+             }
+            ]
+           }
+          ]
+         },
+         ".dkr.ecr.",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::ImportValue": "VentriahqShared:ExportsOutputFnGetAttRepository22E53BBDArn3AD4E30B"
+             }
+            ]
+           }
+          ]
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Fn::ImportValue": "VentriahqShared:ExportsOutputRefRepository22E53BBD9A9E013B"
+         },
+         ":dev"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "MigrationLogs670D4322"
+        },
+        "awslogs-stream-prefix": "migration",
+        "awslogs-region": "ap-southeast-2"
+       }
+      },
+      "Name": "migration",
+      "Secrets": [
+       {
+        "Name": "DATABASE_URL",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":DATABASE_URL::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "JWT_SECRET",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":JWT_SECRET::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "JWT_EXPIRES",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":JWT_EXPIRES::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "REFRESH_EXPIRES_DAYS",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":REFRESH_EXPIRES_DAYS::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "SES_FROM_ADDRESS",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "AppSecretFAB5164C"
+           },
+           ":SES_FROM_ADDRESS::"
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ],
+    "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "ExecutionRole605A040B",
+      "Arn"
+     ]
+    },
+    "Family": "ventriahq-dev-migration",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "TaskRole30FC0FBB",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/MigrationTaskDef/Resource"
+   }
+  },
+  "Alb16C2F182": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Name": "ventriahq-dev-alb",
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "AlbSg1155C1BE",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "VpcpublicSubnet1Subnet2BB74ED7"
+     },
+     {
+      "Ref": "VpcpublicSubnet2SubnetE34B022A"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "VpcpublicSubnet1DefaultRouteB88F9E93",
+    "VpcpublicSubnet1RouteTableAssociation4E83B6E4",
+    "VpcpublicSubnet2DefaultRoute732F0BEB",
+    "VpcpublicSubnet2RouteTableAssociationCCE257FF"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Alb/Resource"
+   }
+  },
+  "AlbHttpListener00C8B33E": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "AlbHttpListenerApiTargetsGroupD502DD1A"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "Alb16C2F182"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Alb/HttpListener/Resource"
+   }
+  },
+  "AlbHttpListenerApiTargetsGroupD502DD1A": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckIntervalSeconds": 30,
+    "HealthCheckPath": "/health",
+    "HealthyThresholdCount": 2,
+    "Matcher": {
+     "HttpCode": "200"
+    },
+    "Name": "ventriahq-dev-api-tg",
+    "Port": 8000,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "UnhealthyThresholdCount": 3,
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Alb/HttpListener/ApiTargetsGroup/Resource"
+   }
+  },
+  "ApiServiceC9037CF0": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "DeploymentCircuitBreaker": {
+      "Enable": true,
+      "Rollback": true
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 100
+    },
+    "DeploymentController": {
+     "Type": "ECS"
+    },
+    "DesiredCount": 1,
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "api",
+      "ContainerPort": 8000,
+      "TargetGroupArn": {
+       "Ref": "AlbHttpListenerApiTargetsGroupD502DD1A"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "EcsSg17B4B0B3",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "VpcprivateSubnet1SubnetCEAD3716"
+       },
+       {
+        "Ref": "VpcprivateSubnet2Subnet2DE7549C"
+       }
+      ]
+     }
+    },
+    "ServiceName": "ventriahq-dev-api",
+    "TaskDefinition": {
+     "Ref": "ApiTaskDef37DBDBD0"
+    }
+   },
+   "DependsOn": [
+    "AlbHttpListenerApiTargetsGroupD502DD1A",
+    "AlbHttpListener00C8B33E",
+    "TaskRole30FC0FBB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/ApiService/Service"
+   }
+  },
+  "SchedulerService59181E72": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "DeploymentCircuitBreaker": {
+      "Enable": true,
+      "Rollback": true
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 100
+    },
+    "DeploymentController": {
+     "Type": "ECS"
+    },
+    "DesiredCount": 1,
+    "EnableECSManagedTags": false,
+    "LaunchType": "FARGATE",
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "EcsSg17B4B0B3",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "VpcprivateSubnet1SubnetCEAD3716"
+       },
+       {
+        "Ref": "VpcprivateSubnet2Subnet2DE7549C"
+       }
+      ]
+     }
+    },
+    "ServiceName": "ventriahq-dev-scheduler",
+    "TaskDefinition": {
+     "Ref": "SchedulerTaskDef76550FAF"
+    }
+   },
+   "DependsOn": [
+    "TaskRole30FC0FBB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/SchedulerService/Service"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/5VSTW/bMAz9Lc1Z0ZZ0O2y3fGxFgGI14qKXoRhomXGZ2FIgUskKw/99sJXY7oYN2ImPj4/Uk8S5nn/8pN/fwJmnJj9MS8p0nQqYg4Iz/6jRzHX9dDRqtbNPyUolISvJpCGzKC03oK0Lgo+QlTjwA7dgdoZAyNle3IIvm6QN30DuQPAMryrxdALBYfDGCnqLvSA6uWQLETAvFVpRKZrgSV7vvAvHzsM/iY0tPDI3yues6zUIZMC4sSxgDap4ft+6Xo6JqzpF46PJ9fLa2SjuWK7AQoFe1/HkVhjDI/gCZeS8F/xRiXSjsAQWMmBeMM57627VFlZlYEHfKL7V9TKYQ3QW0fd6UtFPspPPk/FXt3/Mt7orsY7SRRC3xhIFH7I9GuFJ86xiKXElmddhasz/Y3ZsSAUE2/u1oxtFUOl66+LidHE4J6JGoWFdX27Y3fgCv4IvoN0xPqxxR5auG/Y746wAWfQj7tKboj+RiVsbYaNKV7Cu713RP/EV939ROsgzKMEassVpruvF8ViS6Vb83kG+7GrR7Zt8rCMWtBfNFY/qcR96D6O0adQW2QXfGg8srhrSnf1LKfHuRDn6JTCqBTNKKlCQLdqehyDHII2yLke953en+Qc9m+nZzZ6Jpj5YoQr1NsZfCHM18TcEAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ApiUrl": {
+   "Description": "API base URL",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Fn::GetAtt": [
+        "Alb16C2F182",
+        "DNSName"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "RdsEndpoint": {
+   "Description": "RDS endpoint — use to build DATABASE_URL in the app secret",
+   "Value": {
+    "Fn::GetAtt": [
+     "DatabaseB269D8BB",
+     "Endpoint.Address"
+    ]
+   }
+  },
+  "RdsSecretArn": {
+   "Description": "RDS credentials secret — retrieve the password from here",
+   "Value": {
+    "Ref": "DatabaseSecretAttachmentE5D1B020"
+   }
+  },
+  "AppSecretArn": {
+   "Description": "App secret ARN — update DATABASE_URL, JWT_SECRET, SES_FROM_ADDRESS here",
+   "Value": {
+    "Ref": "AppSecretFAB5164C"
+   }
+  },
+  "UploadsBucketName": {
+   "Description": "S3 uploads bucket name",
+   "Value": {
+    "Ref": "UploadsBucket5E5E9B64"
+   }
+  },
+  "EcsClusterName": {
+   "Description": "ECS cluster name — used by GitHub Actions to deploy",
+   "Value": {
+    "Ref": "ClusterEB0386A7"
+   }
+  },
+  "MigrationTaskDefFamily": {
+   "Description": "Migration task definition family — used by GitHub Actions to run migrations",
+   "Value": "ventriahq-dev-migration"
+  },
+  "PrivateSubnetIds": {
+   "Description": "Private subnet IDs — used by GitHub Actions to run the migration task",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Ref": "VpcprivateSubnet1SubnetCEAD3716"
+      },
+      ",",
+      {
+       "Ref": "VpcprivateSubnet2Subnet2DE7549C"
+      }
+     ]
+    ]
+   }
+  },
+  "EcsSecurityGroupId": {
+   "Description": "ECS security group ID — used by GitHub Actions to run the migration task",
+   "Value": {
+    "Fn::GetAtt": [
+     "EcsSg17B4B0B3",
+     "GroupId"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

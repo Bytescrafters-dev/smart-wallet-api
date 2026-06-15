@@ -1,0 +1,105 @@
+{
+  "/VentriahqShared": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:15:16)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqShared/RepositoryUri": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RepositoryUri"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SharedStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/shared-stack.ts:20:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:15:16)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqShared/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/VentriahqShared/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/VentriahqShared/Repository/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Repository22E53BBD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Repository2 in aws-cdk-lib...",
+        "new SharedStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/shared-stack.ts:11:23)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:15:16)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/VentriahqShared/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/VentriahqShared/Exports/Output{\"Fn::GetAtt\":[\"Repository22E53BBD\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttRepository22E53BBDArn3AD4E30B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/VentriahqShared/Exports/Output{\"Ref\":\"Repository22E53BBD\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefRepository22E53BBD9A9E013B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ]
+}

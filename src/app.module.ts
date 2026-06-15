@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { HealthController } from './health.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bullmq';
 import { PrismaModule } from './common/prisma/prisma.module';
@@ -22,6 +23,7 @@ import { BillingModule } from './modules/billing/billing.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
+  controllers: [HealthController],
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),

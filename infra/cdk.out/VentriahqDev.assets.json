@@ -1,0 +1,51 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "02b51ab524e7bcf8f477de3e71e5f9a72e448301b26ba62e9e75a14f9c55a093": {
+      "displayName": "VentriahqDev/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.02b51ab524e7bcf8f477de3e71e5f9a72e448301b26ba62e9e75a14f9c55a093",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "089126833489-ap-southeast-2-0df5ee59": {
+          "bucketName": "cdk-hnb659fds-assets-089126833489-ap-southeast-2",
+          "objectKey": "02b51ab524e7bcf8f477de3e71e5f9a72e448301b26ba62e9e75a14f9c55a093.zip",
+          "region": "ap-southeast-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::089126833489:role/cdk-hnb659fds-file-publishing-role-089126833489-ap-southeast-2"
+        }
+      }
+    },
+    "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6": {
+      "displayName": "VentriahqDev/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "089126833489-ap-southeast-2-836fa913": {
+          "bucketName": "cdk-hnb659fds-assets-089126833489-ap-southeast-2",
+          "objectKey": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip",
+          "region": "ap-southeast-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::089126833489:role/cdk-hnb659fds-file-publishing-role-089126833489-ap-southeast-2"
+        }
+      }
+    },
+    "2839c5eb2a8a9ed5619f117cae1e109f358191642292b2fd62a1829eeace962c": {
+      "displayName": "VentriahqDev Template",
+      "source": {
+        "path": "VentriahqDev.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "089126833489-ap-southeast-2-e085e1a4": {
+          "bucketName": "cdk-hnb659fds-assets-089126833489-ap-southeast-2",
+          "objectKey": "2839c5eb2a8a9ed5619f117cae1e109f358191642292b2fd62a1829eeace962c.json",
+          "region": "ap-southeast-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::089126833489:role/cdk-hnb659fds-file-publishing-role-089126833489-ap-southeast-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
