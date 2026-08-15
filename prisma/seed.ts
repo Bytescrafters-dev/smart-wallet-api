@@ -1,155 +1,199 @@
+// import * as dotenv from 'dotenv';
+// dotenv.config();
+// import { PrismaClient } from '@prisma/client';
+// import { PrismaPg } from '@prisma/adapter-pg';
+// import * as bcrypt from 'bcryptjs';
+
+// const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
+
+// async function main() {
+//   const store = await prisma.store.upsert({
+//     where: { slug: 'default' },
+//     update: {},
+//     create: {
+//       name: 'Smart Wallets Shop',
+//       slug: 'default',
+//       defaultCurrency: 'AUD',
+//       timezone: 'Australia/Melbourne',
+//     },
+//   });
+
+//   await prisma.shippingProfile.create({
+//     data: {
+//       storeId: store.id,
+//       name: 'Default Shipping',
+//     },
+//   });
+
+//   const adminHash = await bcrypt.hash('admin123', 12);
+//   const admin = await prisma.user.upsert({
+//     where: { email: 'info.bytecrafters@gmail.com' },
+//     update: {},
+//     create: {
+//       email: 'info.bytecrafters@gmail.com',
+//       passwordHash: adminHash,
+//       role: 'OWNER',
+//       mustChangePassword: false,
+//       firstName: 'Admin',
+//     },
+//   });
+//   await prisma.adminStore.upsert({
+//     where: { userId_storeId: { userId: admin.id, storeId: store.id } },
+//     update: {},
+//     create: { userId: admin.id, storeId: store.id, role: 'OWNER' },
+//   });
+
+//   const customerHash = await bcrypt.hash('customer123', 12);
+//   await prisma.storeUser.upsert({
+//     where: { storeId_email: { storeId: store.id, email: 'customer@example.com' } },
+//     update: {},
+//     create: {
+//       storeId: store.id,
+//       email: 'customer@example.com',
+//       passwordHash: customerHash,
+//       firstName: 'Jane',
+//       lastName: 'Doe',
+//     },
+//   });
+
+//   const cat = await prisma.category.upsert({
+//     where: { storeId_slug: { storeId: store.id, slug: 't-shirts' } },
+//     update: {},
+//     create: { storeId: store.id, name: 'T-Shirts', slug: 't-shirts' },
+//   });
+
+//   const p = await prisma.product.upsert({
+//     where: { storeId_slug: { storeId: store.id, slug: 'unisex-tee' } },
+//     update: {},
+//     create: {
+//       storeId: store.id,
+//       title: 'Unisex Tee',
+//       slug: 'unisex-tee',
+//       description: 'Soft cotton tee',
+//       categoryId: cat.id,
+//     },
+//   });
+
+//   const size = await prisma.productOption.upsert({
+//     where: { productId_name: { productId: p.id, name: 'Size' } },
+//     update: {},
+//     create: { productId: p.id, name: 'Size', position: 0 },
+//   });
+//   const color = await prisma.productOption.upsert({
+//     where: { productId_name: { productId: p.id, name: 'Color' } },
+//     update: {},
+//     create: { productId: p.id, name: 'Color', position: 1 },
+//   });
+
+//   const [S, M, L] = await Promise.all(
+//     ['S', 'M', 'L'].map((v, i) =>
+//       prisma.productOptionValue.upsert({
+//         where: { optionId_value: { optionId: size.id, value: v } },
+//         update: {},
+//         create: { optionId: size.id, value: v, position: i },
+//       }),
+//     ),
+//   );
+//   const [Black, White] = await Promise.all(
+//     ['Black', 'White'].map((v, i) =>
+//       prisma.productOptionValue.upsert({
+//         where: { optionId_value: { optionId: color.id, value: v } },
+//         update: {},
+//         create: { optionId: color.id, value: v, position: i },
+//       }),
+//     ),
+//   );
+
+//   async function mk(
+//     sv: string,
+//     cv: string,
+//     sku: string,
+//     price: number,
+//     qty = 10,
+//   ) {
+//     const sVal = await prisma.productOptionValue.findFirst({
+//       where: { optionId: size.id, value: sv },
+//     });
+//     const cVal = await prisma.productOptionValue.findFirst({
+//       where: { optionId: color.id, value: cv },
+//     });
+//     const v = await prisma.productVariant.upsert({
+//       where: { sku },
+//       update: {},
+//       create: { productId: p.id, sku },
+//     });
+//     await prisma.productVariantOptionValue.upsert({
+//       where: { variantId_optionValueId: { variantId: v.id, optionValueId: sVal!.id } },
+//       update: {},
+//       create: { variantId: v.id, optionValueId: sVal!.id },
+//     });
+//     await prisma.productVariantOptionValue.upsert({
+//       where: { variantId_optionValueId: { variantId: v.id, optionValueId: cVal!.id } },
+//       update: {},
+//       create: { variantId: v.id, optionValueId: cVal!.id },
+//     });
+//     const existingPrice = await prisma.productVariantPrice.findFirst({
+//       where: { variantId: v.id, currency: 'AUD' },
+//     });
+//     if (!existingPrice) {
+//       await prisma.productVariantPrice.create({
+//         data: { variantId: v.id, currency: 'AUD', amount: price },
+//       });
+//     }
+//     await prisma.variantInventory.upsert({
+//       where: { variantId: v.id },
+//       update: {},
+//       create: { variantId: v.id, quantity: qty },
+//     });
+//   }
+//   await mk('S', 'Black', 'TEE-S-BLK', 2999);
+//   await mk('M', 'Black', 'TEE-M-BLK', 2999);
+//   await mk('L', 'White', 'TEE-L-WHT', 2999);
+
+//   console.log('Seed done');
+// }
+// main().finally(() => prisma.$disconnect());
+
 import * as dotenv from 'dotenv';
 dotenv.config();
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import * as bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({
+    connectionString: process.env.DATABASE_URL!,
+    ssl:
+      process.env.NODE_ENV === 'production'
+        ? { rejectUnauthorized: false }
+        : undefined,
+  }),
+});
 
 async function main() {
-  const store = await prisma.store.upsert({
-    where: { slug: 'default' },
-    update: {},
-    create: {
-      name: 'Smart Wallets Shop',
-      slug: 'default',
-      defaultCurrency: 'AUD',
-      timezone: 'Australia/Melbourne',
-    },
-  });
+  const email = 'info.bytecrafters@gmail.com';
+  const password = 'superadmin123';
 
-  await prisma.shippingProfile.create({
-    data: {
-      storeId: store.id,
-      name: 'Default Shipping',
-    },
-  });
-
-  const adminHash = await bcrypt.hash('admin123', 12);
-  const admin = await prisma.user.upsert({
-    where: { email: 'info.bytecrafters@gmail.com' },
-    update: {},
-    create: {
-      email: 'info.bytecrafters@gmail.com',
-      passwordHash: adminHash,
-      role: 'OWNER',
-      mustChangePassword: false,
-      firstName: 'Admin',
-    },
-  });
-  await prisma.adminStore.upsert({
-    where: { userId_storeId: { userId: admin.id, storeId: store.id } },
-    update: {},
-    create: { userId: admin.id, storeId: store.id, role: 'OWNER' },
-  });
-
-  const customerHash = await bcrypt.hash('customer123', 12);
-  await prisma.storeUser.upsert({
-    where: { storeId_email: { storeId: store.id, email: 'customer@example.com' } },
-    update: {},
-    create: {
-      storeId: store.id,
-      email: 'customer@example.com',
-      passwordHash: customerHash,
-      firstName: 'Jane',
-      lastName: 'Doe',
-    },
-  });
-
-  const cat = await prisma.category.upsert({
-    where: { storeId_slug: { storeId: store.id, slug: 't-shirts' } },
-    update: {},
-    create: { storeId: store.id, name: 'T-Shirts', slug: 't-shirts' },
-  });
-
-  const p = await prisma.product.upsert({
-    where: { storeId_slug: { storeId: store.id, slug: 'unisex-tee' } },
-    update: {},
-    create: {
-      storeId: store.id,
-      title: 'Unisex Tee',
-      slug: 'unisex-tee',
-      description: 'Soft cotton tee',
-      categoryId: cat.id,
-    },
-  });
-
-  const size = await prisma.productOption.upsert({
-    where: { productId_name: { productId: p.id, name: 'Size' } },
-    update: {},
-    create: { productId: p.id, name: 'Size', position: 0 },
-  });
-  const color = await prisma.productOption.upsert({
-    where: { productId_name: { productId: p.id, name: 'Color' } },
-    update: {},
-    create: { productId: p.id, name: 'Color', position: 1 },
-  });
-
-  const [S, M, L] = await Promise.all(
-    ['S', 'M', 'L'].map((v, i) =>
-      prisma.productOptionValue.upsert({
-        where: { optionId_value: { optionId: size.id, value: v } },
-        update: {},
-        create: { optionId: size.id, value: v, position: i },
-      }),
-    ),
-  );
-  const [Black, White] = await Promise.all(
-    ['Black', 'White'].map((v, i) =>
-      prisma.productOptionValue.upsert({
-        where: { optionId_value: { optionId: color.id, value: v } },
-        update: {},
-        create: { optionId: color.id, value: v, position: i },
-      }),
-    ),
-  );
-
-  async function mk(
-    sv: string,
-    cv: string,
-    sku: string,
-    price: number,
-    qty = 10,
-  ) {
-    const sVal = await prisma.productOptionValue.findFirst({
-      where: { optionId: size.id, value: sv },
-    });
-    const cVal = await prisma.productOptionValue.findFirst({
-      where: { optionId: color.id, value: cv },
-    });
-    const v = await prisma.productVariant.upsert({
-      where: { sku },
-      update: {},
-      create: { productId: p.id, sku },
-    });
-    await prisma.productVariantOptionValue.upsert({
-      where: { variantId_optionValueId: { variantId: v.id, optionValueId: sVal!.id } },
-      update: {},
-      create: { variantId: v.id, optionValueId: sVal!.id },
-    });
-    await prisma.productVariantOptionValue.upsert({
-      where: { variantId_optionValueId: { variantId: v.id, optionValueId: cVal!.id } },
-      update: {},
-      create: { variantId: v.id, optionValueId: cVal!.id },
-    });
-    const existingPrice = await prisma.productVariantPrice.findFirst({
-      where: { variantId: v.id, currency: 'AUD' },
-    });
-    if (!existingPrice) {
-      await prisma.productVariantPrice.create({
-        data: { variantId: v.id, currency: 'AUD', amount: price },
-      });
-    }
-    await prisma.variantInventory.upsert({
-      where: { variantId: v.id },
-      update: {},
-      create: { variantId: v.id, quantity: qty },
-    });
+  const existing = await prisma.superAdmin.findUnique({ where: { email } });
+  if (existing) {
+    console.log(`SuperAdmin ${email} already exists, skipping.`);
+    return;
   }
-  await mk('S', 'Black', 'TEE-S-BLK', 2999);
-  await mk('M', 'Black', 'TEE-M-BLK', 2999);
-  await mk('L', 'White', 'TEE-L-WHT', 2999);
 
-  console.log('Seed done');
+  const passwordHash = await bcrypt.hash(password, 12);
+  await prisma.superAdmin.create({
+    data: {
+      email,
+      passwordHash,
+      firstName: 'Super',
+      lastName: 'Admin',
+      role: 'OWNER',
+      mustChangePassword: true,
+    },
+  });
+
+  console.log(`SuperAdmin created: ${email} / ${password}`);
+  console.log('Change the password immediately after first login.');
 }
+
 main().finally(() => prisma.$disconnect());

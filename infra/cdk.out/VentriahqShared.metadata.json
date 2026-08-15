@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:15:16)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/VentriaHQ/ventriahq-api/infra/bin/app.ts:15:16)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -16,8 +16,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SharedStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/shared-stack.ts:20:5)",
-        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:15:16)",
+        "new SharedStack (/Users/ravindulandekumbura/Documents/Bytescrafters/VentriaHQ/ventriahq-api/infra/lib/shared-stack.ts:20:5)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/VentriaHQ/ventriahq-api/infra/bin/app.ts:15:16)",
         "...node internals, ts-node, ts-node..."
       ]
     }
@@ -57,8 +57,8 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "...new Repository2 in aws-cdk-lib...",
-        "new SharedStack (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/lib/shared-stack.ts:11:23)",
-        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/Smart Wallets/nexora-api/infra/bin/app.ts:15:16)",
+        "new SharedStack (/Users/ravindulandekumbura/Documents/Bytescrafters/VentriaHQ/ventriahq-api/infra/lib/shared-stack.ts:11:23)",
+        "<anonymous> (/Users/ravindulandekumbura/Documents/Bytescrafters/VentriaHQ/ventriahq-api/infra/bin/app.ts:15:16)",
         "...node internals, ts-node, ts-node..."
       ]
     }

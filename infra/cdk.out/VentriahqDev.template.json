@@ -972,8 +972,8 @@
         "POST"
        ],
        "AllowedOrigins": [
-        "https://dev.admin.xtrills.com",
-        "https://dev.xtrills.com"
+        "https://dev-admin.ventriahq.com",
+        "https://dev.ventriahq.com"
        ]
       }
      ]
@@ -1436,7 +1436,7 @@
        },
        {
         "Name": "CORS_ORIGIN",
-        "Value": "https://dev.admin.xtrills.com, https://dev.xtrills.com"
+        "Value": "https://dev-admin.ventriahq.com, https://dev.ventriahq.com"
        }
       ],
       "Essential": true,
@@ -1642,7 +1642,7 @@
        },
        {
         "Name": "CORS_ORIGIN",
-        "Value": "https://dev.admin.xtrills.com, https://dev.xtrills.com"
+        "Value": "https://dev-admin.ventriahq.com, https://dev.ventriahq.com"
        },
        {
         "Name": "SCHEDULER_ONLY",
@@ -1852,7 +1852,7 @@
        },
        {
         "Name": "CORS_ORIGIN",
-        "Value": "https://dev.admin.xtrills.com, https://dev.xtrills.com"
+        "Value": "https://dev-admin.ventriahq.com, https://dev.ventriahq.com"
        }
       ],
       "Essential": true,
@@ -2052,10 +2052,12 @@
    "Properties": {
     "DefaultActions": [
      {
-      "TargetGroupArn": {
-       "Ref": "AlbHttpListenerApiTargetsGroupD502DD1A"
+      "RedirectConfig": {
+       "Port": "443",
+       "Protocol": "HTTPS",
+       "StatusCode": "HTTP_301"
       },
-      "Type": "forward"
+      "Type": "redirect"
      }
     ],
     "LoadBalancerArn": {
@@ -2068,7 +2070,33 @@
     "aws:cdk:path": "VentriahqDev/Alb/HttpListener/Resource"
    }
   },
-  "AlbHttpListenerApiTargetsGroupD502DD1A": {
+  "AlbHttpsListener2ADA614F": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "Certificates": [
+     {
+      "CertificateArn": "arn:aws:acm:ap-southeast-2:089126833489:certificate/c1daca9e-193c-4c2e-a17b-4661641d196a"
+     }
+    ],
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "AlbHttpsListenerApiTargetsGroupE63541EE"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "Alb16C2F182"
+    },
+    "Port": 443,
+    "Protocol": "HTTPS"
+   },
+   "Metadata": {
+    "aws:cdk:path": "VentriahqDev/Alb/HttpsListener/Resource"
+   }
+  },
+  "AlbHttpsListenerApiTargetsGroupE63541EE": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "HealthCheckIntervalSeconds": 30,
@@ -2077,7 +2105,6 @@
     "Matcher": {
      "HttpCode": "200"
     },
-    "Name": "ventriahq-dev-api-tg",
     "Port": 8000,
     "Protocol": "HTTP",
     "TargetGroupAttributes": [
@@ -2093,7 +2120,7 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "VentriahqDev/Alb/HttpListener/ApiTargetsGroup/Resource"
+    "aws:cdk:path": "VentriahqDev/Alb/HttpsListener/ApiTargetsGroup/Resource"
    }
   },
   "ApiServiceC9037CF0": {
@@ -2127,7 +2154,7 @@
       "ContainerName": "api",
       "ContainerPort": 8000,
       "TargetGroupArn": {
-       "Ref": "AlbHttpListenerApiTargetsGroupD502DD1A"
+       "Ref": "AlbHttpsListenerApiTargetsGroupE63541EE"
       }
      }
     ],
@@ -2158,8 +2185,8 @@
     }
    },
    "DependsOn": [
-    "AlbHttpListenerApiTargetsGroupD502DD1A",
-    "AlbHttpListener00C8B33E",
+    "AlbHttpsListenerApiTargetsGroupE63541EE",
+    "AlbHttpsListener2ADA614F",
     "TaskRole30FC0FBB"
    ],
    "Metadata": {
@@ -2241,7 +2268,7 @@
     "Fn::Join": [
      "",
      [
-      "http://",
+      "https://",
       {
        "Fn::GetAtt": [
         "Alb16C2F182",

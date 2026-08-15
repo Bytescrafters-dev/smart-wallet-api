@@ -3,6 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as elasticache from 'aws-cdk-lib/aws-elasticache';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -332,11 +333,6 @@ export class EnvStack extends cdk.Stack {
       securityGroup: albSg,
     });
 
-    const listener = alb.addListener('HttpListener', {
-      port: 80,
-      open: true,
-    });
-
     // ── API Service ───────────────────────────────────────────────────────────
     const apiService = new ecs.FargateService(this, 'ApiService', {
       serviceName: `${p}-api`,
@@ -350,8 +346,7 @@ export class EnvStack extends cdk.Stack {
       minHealthyPercent: 100,
     });
 
-    listener.addTargets('ApiTargets', {
-      targetGroupName: `${p}-api-tg`,
+    const targetGroupProps = {
       port: 8000,
       protocol: elbv2.ApplicationProtocol.HTTP,
       targets: [apiService],
@@ -362,7 +357,36 @@ export class EnvStack extends cdk.Stack {
         healthyThresholdCount: 2,
         unhealthyThresholdCount: 3,
       },
-    });
+    };
+
+    if (config.certificateArn) {
+      // HTTP → HTTPS redirect
+      alb.addListener('HttpListener', {
+        port: 80,
+        open: true,
+        defaultAction: elbv2.ListenerAction.redirect({
+          protocol: 'HTTPS',
+          port: '443',
+          permanent: true,
+        }),
+      });
+
+      // HTTPS listener with ACM certificate
+      const httpsListener = alb.addListener('HttpsListener', {
+        port: 443,
+        open: true,
+        certificates: [
+          acm.Certificate.fromCertificateArn(this, 'Cert', config.certificateArn),
+        ],
+      });
+      httpsListener.addTargets('ApiTargets', targetGroupProps);
+    } else {
+      const httpListener = alb.addListener('HttpListener', {
+        port: 80,
+        open: true,
+      });
+      httpListener.addTargets('ApiTargets', targetGroupProps);
+    }
 
     // ── Scheduler Service ─────────────────────────────────────────────────────
     new ecs.FargateService(this, 'SchedulerService', {
@@ -379,7 +403,9 @@ export class EnvStack extends cdk.Stack {
 
     // ── Outputs ───────────────────────────────────────────────────────────────
     new cdk.CfnOutput(this, 'ApiUrl', {
-      value: `http://${alb.loadBalancerDnsName}`,
+      value: config.certificateArn
+        ? `https://${alb.loadBalancerDnsName}`
+        : `http://${alb.loadBalancerDnsName}`,
       description: 'API base URL',
     });
 

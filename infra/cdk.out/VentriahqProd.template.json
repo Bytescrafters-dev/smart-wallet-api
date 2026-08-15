@@ -975,8 +975,8 @@
         "POST"
        ],
        "AllowedOrigins": [
-        "https://admin.xtrills.com",
-        "https://xtrills.com"
+        "https://admin.ventriahq.com",
+        "https://ventriahq.com"
        ]
       }
      ]
@@ -1292,7 +1292,7 @@
        },
        {
         "Name": "CORS_ORIGIN",
-        "Value": "https://admin.xtrills.com, https://xtrills.com"
+        "Value": "https://admin.ventriahq.com, https://ventriahq.com"
        }
       ],
       "Essential": true,
@@ -1498,7 +1498,7 @@
        },
        {
         "Name": "CORS_ORIGIN",
-        "Value": "https://admin.xtrills.com, https://xtrills.com"
+        "Value": "https://admin.ventriahq.com, https://ventriahq.com"
        },
        {
         "Name": "SCHEDULER_ONLY",
@@ -1708,7 +1708,7 @@
        },
        {
         "Name": "CORS_ORIGIN",
-        "Value": "https://admin.xtrills.com, https://xtrills.com"
+        "Value": "https://admin.ventriahq.com, https://ventriahq.com"
        }
       ],
       "Essential": true,
@@ -1933,7 +1933,6 @@
     "Matcher": {
      "HttpCode": "200"
     },
-    "Name": "ventriahq-prod-api-tg",
     "Port": 8000,
     "Protocol": "HTTP",
     "TargetGroupAttributes": [

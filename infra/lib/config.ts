@@ -3,6 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 export interface EnvConfig {
   envName: 'dev' | 'prod';
   corsOrigin: string; // comma-separated list of allowed origins
+  certificateArn?: string;
   rds: {
     instanceType: ec2.InstanceType;
     multiAz: boolean;
@@ -25,7 +26,9 @@ export interface EnvConfig {
 
 export const DEV_CONFIG: EnvConfig = {
   envName: 'dev',
-  corsOrigin: 'https://dev.admin.xtrills.com, https://dev.xtrills.com',
+  corsOrigin: 'https://dev-admin.ventriahq.com, https://dev.ventriahq.com',
+  certificateArn:
+    'arn:aws:acm:ap-southeast-2:089126833489:certificate/c1daca9e-193c-4c2e-a17b-4661641d196a',
   rds: {
     instanceType: ec2.InstanceType.of(
       ec2.InstanceClass.T4G,
@@ -50,7 +53,7 @@ export const DEV_CONFIG: EnvConfig = {
 
 export const PROD_CONFIG: EnvConfig = {
   envName: 'prod',
-  corsOrigin: 'https://admin.xtrills.com, https://xtrills.com',
+  corsOrigin: 'https://admin.ventriahq.com, https://ventriahq.com',
   rds: {
     instanceType: ec2.InstanceType.of(
       ec2.InstanceClass.T4G,
