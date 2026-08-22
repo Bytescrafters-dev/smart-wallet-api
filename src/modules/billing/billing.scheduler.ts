@@ -41,7 +41,7 @@ export class BillingScheduler {
       await this.billingQueue.add(
         JOBS.TRIAL_EXPIRY,
         { subscriptionId: sub.id },
-        { ...JOB_OPTIONS, jobId: `trial-expiry:${sub.id}` },
+        { ...JOB_OPTIONS, jobId: `trial-expiry_${sub.id}` },
       );
     }
 
@@ -70,7 +70,7 @@ export class BillingScheduler {
       await this.billingQueue.add(
         JOBS.PERIOD_END,
         { subscriptionId: sub.id },
-        { ...JOB_OPTIONS, jobId: `period-end:${sub.id}` },
+        { ...JOB_OPTIONS, jobId: `period-end_${sub.id}` },
       );
     }
 
@@ -95,7 +95,7 @@ export class BillingScheduler {
       await this.billingQueue.add(
         JOBS.OVERDUE_INVOICE,
         { invoiceId: invoice.id },
-        { ...JOB_OPTIONS, jobId: `overdue-invoice:${invoice.id}` },
+        { ...JOB_OPTIONS, jobId: `overdue-invoice_${invoice.id}` },
       );
     }
 
