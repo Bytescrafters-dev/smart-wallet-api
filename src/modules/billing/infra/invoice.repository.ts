@@ -18,7 +18,7 @@ const SUBSCRIPTION_SELECT = {
     currentPeriodEnd: true,
     planPrice: {
       select: {
-        plan: true,
+        planName: true,
         billingCycle: true,
         currency: true,
         amount: true,
