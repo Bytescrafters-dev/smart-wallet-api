@@ -8,6 +8,7 @@ import { InvoiceStatus, PaymentMethod } from '@prisma/client';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { TOKENS } from 'src/common/constants/tokens';
 import { IInvoiceRepository } from './interfaces/invoice.repository.interface';
+import { InvoicesQueryDto } from './dtos/list-invoices-query.dto';
 
 @Injectable()
 export class InvoiceService {
@@ -19,6 +20,32 @@ export class InvoiceService {
 
   listByTenant(tenantId: string) {
     return this.invoiceRepo.findAllByTenant(tenantId);
+  }
+
+  async listInvoices(query: InvoicesQueryDto) {
+    const page = query.page || 1;
+    const limit = query.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const params = {
+      status: query.status,
+      q: query.q,
+      createdAtFrom: query.createdAtFrom
+        ? new Date(query.createdAtFrom)
+        : undefined,
+      createdAtTo: query.createdAtTo ? new Date(query.createdAtTo) : undefined,
+      dueFrom: query.dueFrom ? new Date(query.dueFrom) : undefined,
+      dueTo: query.dueTo ? new Date(query.dueTo) : undefined,
+      skip,
+      take: limit,
+    };
+
+    const [data, total] = await Promise.all([
+      this.invoiceRepo.list(params),
+      this.invoiceRepo.count(params),
+    ]);
+
+    return { data, total, page, limit };
   }
 
   async findOne(id: string) {

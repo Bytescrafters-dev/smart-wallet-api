@@ -3,11 +3,13 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { SuperAdminGuard } from 'src/common/guards/super-admin.guard';
 import { InvoiceService } from './invoice.service';
+import { InvoicesQueryDto } from './dtos/list-invoices-query.dto';
 
 @Controller('super-admin')
 @UseGuards(SuperAdminGuard)
@@ -17,6 +19,11 @@ export class InvoiceController {
   @Get('tenants/:tenantId/invoices')
   listByTenant(@Param('tenantId') tenantId: string) {
     return this.invoiceService.listByTenant(tenantId);
+  }
+
+  @Get('invoices')
+  listInvoices(@Query() query: InvoicesQueryDto) {
+    return this.invoiceService.listInvoices(query);
   }
 
   @Get('invoices/:id')

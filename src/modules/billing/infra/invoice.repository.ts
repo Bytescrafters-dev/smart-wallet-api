@@ -3,6 +3,7 @@ import { Prisma, TenantInvoice } from '@prisma/client';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import {
   IInvoiceRepository,
+  InvoicesListParams,
   UpdateInvoiceData,
 } from '../interfaces/invoice.repository.interface';
 
@@ -30,6 +31,63 @@ const SUBSCRIPTION_SELECT = {
 @Injectable()
 export class InvoiceRepository implements IInvoiceRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  list(params: InvoicesListParams) {
+    const { skip = 0, take = 20 } = params;
+    return this.prisma.tenantInvoice.findMany({
+      where: this.buildWhere(params),
+      include: {
+        tenant: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            companyName: true,
+          },
+        },
+        subscription: SUBSCRIPTION_SELECT,
+        paidBy: PAID_BY_SELECT,
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take,
+    });
+  }
+
+  count(params: Omit<InvoicesListParams, 'skip' | 'take'>): Promise<number> {
+    return this.prisma.tenantInvoice.count({ where: this.buildWhere(params) });
+  }
+
+  private buildWhere(params: Omit<InvoicesListParams, 'skip' | 'take'>) {
+    const { status, q, createdAtFrom, createdAtTo, dueFrom, dueTo } = params;
+    return {
+      ...(status ? { status } : {}),
+      ...(q
+        ? {
+            OR: [
+              { invoiceNumber: { contains: q, mode: 'insensitive' as const } },
+              { notes: { contains: q, mode: 'insensitive' as const } },
+            ],
+          }
+        : {}),
+      ...(createdAtFrom || createdAtTo
+        ? {
+            createdAt: {
+              ...(createdAtFrom ? { gte: createdAtFrom } : {}),
+              ...(createdAtTo ? { lte: createdAtTo } : {}),
+            },
+          }
+        : {}),
+      ...(dueFrom || dueTo
+        ? {
+            dueDate: {
+              ...(dueFrom ? { gte: dueFrom } : {}),
+              ...(dueTo ? { lte: dueTo } : {}),
+            },
+          }
+        : {}),
+    };
+  }
 
   findAllByTenant(tenantId: string): Promise<any[]> {
     return this.prisma.tenantInvoice.findMany({
